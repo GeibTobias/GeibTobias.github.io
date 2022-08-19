@@ -2278,6 +2278,25 @@ input, select, textarea {
 	}
 
 
+/* Three */
+
+#music {
+	background: url("images/overlay.png"), url("../../images/beatspeeder.jpg");
+	background-size: 256px 256px, cover;
+	background-attachment: fixed, fixed;
+	background-position: top left, 35% center;
+	}
+
+	
+/* Three */
+
+#japan {
+	background: url("images/overlay.png"), url("../../images/ginza\ comp.png");
+	background-size: 256px 256px, cover;
+	background-attachment: fixed, fixed;
+	background-position: top left, 35% center;
+	}
+
 	
 
 /* Contact */

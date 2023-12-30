@@ -1,9 +1,4 @@
 <!DOCTYPE HTML>
-<!--
-	Big Picture by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
 		<style>
@@ -11,7 +6,7 @@
 			  font-family: "Courier New", Lucida, monospace;
 			}
 		</style>
-		<title>Portfolio - Tobias Geib</title>
+		<title>Tobias Geib - Portfolio</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -25,11 +20,10 @@
 				<h1>Tobias Geib M.Sc.</h1>
 				<nav>
 					<ul>
-						<li><a href="images/CV_Tobias_Geib.pdf" download><strong>CV</strong></a>
-						<li><a href="#intro">Intro</a></li>
-						<li><a href="#work">My Work</a></li>
-						<li><a href="#one">What I Do</a></li>
-						<li><a href="#two">Who I Am</a></li>
+						<li><a href="images/CV_Tobias_Geib.pdf" download>CV</a>
+						<li><a href="#intro"><strong>Portfolio</strong></a></li>
+						<li><a href="/about.html">About Me</a></li>
+						<li><a href="/projects.html">Projects</a></li>
 						<li><a href="#contact">Contact</a></li>
 					</ul>
 				</nav>
@@ -39,10 +33,37 @@
 			<section id="intro" class="main style1 dark fullscreen">
 				<div class="content">
 					<header>
-						<h2>HI! I'm Tobias!</h2>
+						<h2>Tobias Geib</h2>
 					</header>
-					<p>I'm a passionate <strong>artist</strong> and <strong>software-engineer</strong> from Germany.<br />
-					I develop tools for drawing in 3D VR, which I then use for my concept art.</p>
+					<p>I'm Tobi, I am a passionate <strong>artist</strong> and a professional <strong>software-engineer</strong> from Germany.<br />
+					I like to combine my creativity with my technical knowledge. <br /></p>
+
+					        <!-- Logos Container -->
+							<div class="logo-container" id="logoContainer">
+								<!-- Replace the following with your array of logo images -->
+								<img class="logo" src="images/cubase.png" alt="Logo 2">
+								<img class="logo" src="images/fusion.png" alt="Logo 2">
+								<img class="logo" src="images/gslogo.png" alt="Logo 2">
+								<img class="logo" src="images/photoshop logo.png" alt="Logo 2">
+								<img class="logo" src="images/unity.png" alt="Logo 2">
+								<img class="logo" src="images/csharp.png" alt="Logo 2">
+								<img class="logo" src="images/unreal logo.png" alt="Logo 1">
+								<img class="logo" src="images/cpplogo.png" alt="Logo 2">
+								<!-- Add more logos as needed -->
+							</div>
+
+							<script>
+								document.addEventListener('DOMContentLoaded', function() {
+									var logoContainer = document.getElementById('logoContainer');
+									var logos = logoContainer.getElementsByClassName('logo');
+									var maxWidth = Math.max(...Array.from(logos).map(logo => logo.clientWidth));					
+									Array.from(logos).forEach(function(logo) {
+										var widthDiff = (maxWidth - logo.clientWidth) * .5 + 10;
+										logo.style.marginRight = widthDiff + 'px';
+										logo.style.marginLeft = widthDiff + 'px';
+									});
+								});
+							</script>
 					<footer>
 						<a href="#one" class="button style2 down">More</a>
 					</footer>
@@ -53,14 +74,203 @@
 			<section id="one" class="main style2 right dark fullscreen">
 				<div class="content box style2">
 					<header>
-						<h2>Who am I</h2>
+						<h2>Using 3D for 2D Art</h2>
 					</header>
-					<p>I am Tobias Geib, I am 29 and have studied media-informatics at Saarland University and Keio University Tokyo. Currently, I am working as a software-engineer in Karlsruhe.<br><br>
-					My goal is to combine my artistic skills with my technical knowledge by working in the games industry.</p>
+					<p>Using Gravity Sketch and Rendering in Unreal I create 2D art.</p>
 				</div>
-				<a href="#two" class="button style2 down anchored">Next</a>
+				<a href="#conceptart" class="button style2 down anchored">Next</a>
 			</section>
 
+			<section id="conceptart" class="main style3 primary">
+				<div class="content">
+					<header>
+						<h2>Concept Art</h2><br>
+					</header>
+
+					<!-- Gallery  -->
+						<div class="gallery-50">
+							<article >
+								<a href="images/betrayal.jpg" class="image fit"><img class="image" img src="images/betrayal.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/betrayal render1.png" class="image fit"><img class="image" img src="images/betrayal render1.png" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/expedition_alt.jpg" class="image fit"><img class="image" img src="images/expedition_alt.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/expedition pre.png" class="image fit"><img class="image" img src="images/expedition pre.png" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2021-11-17_21-39-06.jpg" class="image fit"><img class="image" img src="images/photo_2021-11-17_21-39-06.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							
+							<article >
+								<a href="images/ship.jpg" class="image fit"><img class="image" img src="images/ship.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-09_15-07-13.png" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13.png" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							
+							<article >
+								<a href="images/canyon.jpg" class="image fit"><img class="image" img src="images/canyon.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/steampunk-gun 2.jpg" class="image fit"><img class="image" img src="images/steampunk-gun 2.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/loft-girigiri crop.jpg" class="image fit"><img class="image" img src="images/loft-girigiri crop.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							</article>
+						</div>
+
+						
+						<div class="gallery">
+						<article >
+							<a href="images/sentry_3 render.jpg" class="image fit"><img class="image" img src="images/sentry_3 render.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						</div>
+				</div>
+			</section>
+
+
+		<!-- Two -->
+		<section id="two" class="main style2 left dark fullscreen">
+			<div class="content box style2">
+				<header>
+					<h2>Character Design</h2>
+				</header>
+				<p>I like to design characters.</p>
+			</div>
+			<a href="#characters" class="button style2 down anchored">Next</a>
+		</section>
+		<section id="characters" class="main style3 primary">
+			<div class="content">
+				<header>
+					<h2>Character Art</h2><br>
+				</header>
+
+				<div class="gallery-h">
+
+					<article >
+						<a href="images/princess polish.jpg" class="image fit"><img class="image" img src="images/princess polish.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+					</article>
+					
+				</div>
+				<!-- Gallery  -->
+					<div class="gallery">
+						<article >
+							<a href="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" class="image fit"><img class="image" img src="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/photo_2023-12-09_15-07-13 (2).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13 (2).jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/photo_2023-12-10_02-48-10.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-10_02-48-10.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/photo_2023-12-09_15-08-33.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-08-33.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/tired warrior.jpg" class="image fit"><img class="image" img src="images/tired warrior.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/smoking girl.jpg" class="image fit"><img class="image" img src="images/smoking girl.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						
+						<article >
+							<a href="images/chunibyo.jpg" class="image fit"><img class="image" img src="images/chunibyo.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						
+						<article >
+							<a href="images/coffee break.jpg" class="image fit"><img class="image" img src="images/coffee break.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						
+						<article >
+							<a href="images/IMG_20231210_123440_691.png" class="image fit"><img class="image" img src="images/IMG_20231210_123440_691.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						
+						<article >
+							<a href="images/photo_2023-12-15_22-28-25.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						
+					</div>
+					
+				<div class="gallery-h">
+					<article >
+						<a href="images/elven cyberpunk ninja 2.jpg" class="image fit"><img class="image" img src="images/elven cyberpunk ninja 2.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+					</article>
+				</div>
+			</div>
+		</section>
+		<!-- Three -->
+		<section id="three" class="main style2 right dark fullscreen">
+			<div class="content box style2">
+				<header>
+					<h2>Illustrations</h2>
+				</header>
+				<p>I like to illustrate.</p>
+			</div>
+			<a href="#illustrations" class="button style2 down anchored">Next</a>
+		</section>
+		<section id="illustrations" class="main style3 primary">
+			<div class="content">
+				<header>
+					<h2>Drawings and Paintings</h2><br>
+				</header>
+				
+				<div class="gallery-50">
+					<article >
+						<a href="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" class="image fit"><img class="image" img src="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" title="A beheaded figure with her killer above" alt="" /></a>
+					</article>
+					<article >
+						<a href="images/death of fildo.png" class="image fit"><img class="image" img src="images/death of fildo.png" title="A beheaded figure with her killer above" alt="" /></a>
+					</article>
+					<article >
+						<a href="images/The first battle of Vogler.jpg" class="image fit"><img class="image" img src="images/The first battle of Vogler.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+					</article>
+					<article >
+						<a href="images/broom witch.jpg" class="image fit"><img class="image" img src="images/broom witch.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+					</article>
+				</div>
+
+				<!-- Gallery  -->
+					<div class="gallery">
+						<article >
+							<a href="images/doom.png" class="image fit"><img class="image" img src="images/doom.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/skull girl.png" class="image fit"><img class="image" img src="images/skull girl.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/crown.png" class="image fit"><img class="image" img src="images/crown.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/photo_2023-12-15_22-28-25 (3).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (3).jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/IMG_20231210_123438_897.png" class="image fit"><img class="image" img src="images/IMG_20231210_123438_897.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/IMG_20231210_123438_487.png" class="image fit"><img class="image" img src="images/IMG_20231210_123438_487.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/poster_A3_revized.png" class="image fit"><img class="image" img src="images/poster_A3_revized.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/flowers.png" class="image fit"><img class="image" img src="images/flowers.png" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/Illustration167.jpg" class="image fit"><img class="image" img src="images/Illustration167.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/scary girl.jpg" class="image fit"><img class="image" img src="images/scary girl.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+						<article >
+							<a href="images/molten creature.jpg" class="image fit"><img class="image" img src="images/molten creature.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+						</article>
+					</div>
+			</div>
+		</section>
 
 <!-- 
 			<section id="three" class="main style2 left dark fullscreen">
@@ -73,131 +283,131 @@
 				<a href="#work" class="button style2 down anchored">Next</a>
 			</section> -->
 
-		<!-- Work -->
+		<!-- Work --><!-- 
 			<section id="work" class="main style3 primary">
 				<div class="content">
 					<header>
 						<h2>My Portfolio</h2><br>
 					</header>
 
-					<!-- Gallery  -->
+					<!-- Gallery  --><!-- 
 						<div class="gallery">
-							<article class="from-left">
-								<a href="images/betrayal.jpg" class="image fit"><img src="images/betrayal.jpg" title="A beheaded figure with her killer above" alt="" /></a>
+							<article >
+								<a href="images/betrayal.jpg" class="image fit"><img class="image" img src="images/betrayal.jpg" title="A beheaded figure with her killer above" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/expedition_alt.jpg" class="image fit"><img src="images/expedition_alt.jpg" title="The people seek to reach the ship on top the snowy mountain" alt="" /></a>
+							<article >
+								<a href="images/expedition_alt.jpg" class="image fit"><img class="image" img src="images/expedition_alt.jpg" title="The people seek to reach the ship on top the snowy mountain" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/princess polish.jpg" class="image fit"><img src="images/princess polish.jpg" title="Character progression: From young princess to Queen." alt="" /></a>
+							<article >
+								<a href="images/princess polish.jpg" class="image fit"><img class="image" img src="images/princess polish.jpg" title="Character progression: From young princess to Queen." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/broom witch.jpg" class="image fit"><img src="images/broom witch.jpg" title="A little witch on her broomstick." alt="" /></a>
+							<article >
+								<a href="images/broom witch.jpg" class="image fit"><img class="image" img src="images/broom witch.jpg" title="A little witch on her broomstick." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/elven cyberpunk ninja 2.jpg" class="image fit"><img src="images/elven cyberpunk ninja 2.jpg" title="Character progresion: Elven Swordfighter to Cyberpunk Ninja." alt="" /></a>
+							<article >
+								<a href="images/elven cyberpunk ninja 2.jpg" class="image fit"><img class="image" img src="images/elven cyberpunk ninja 2.jpg" title="Character progresion: Elven Swordfighter to Cyberpunk Ninja." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/steampunk-gun 2.jpg" class="image fit"><img src="images/steampunk-gun 2.jpg" title="Concept for a full-auto steampunk-gun. A bullet belt is fed into a gatling gun type firing mechanism in the shape of a revolver." alt="" /></a>
+							<article >
+								<a href="images/steampunk-gun 2.jpg" class="image fit"><img class="image" img src="images/steampunk-gun 2.jpg" title="Concept for a full-auto steampunk-gun. A bullet belt is fed into a gatling gun type firing mechanism in the shape of a revolver." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/canyon scaled.png" class="image fit"><img src="images/canyon scaled.png" title="Landscape view with sleeping monk." alt="" /></a>
+							<article >
+								<a href="images/canyon scaled.png" class="image fit"><img class="image" img src="images/canyon scaled.png" title="Landscape view with sleeping monk." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/loft-girigiri crop.jpg" class="image fit"><img src="images/loft-girigiri crop.jpg" title="A cyberpunk loft in isometric view." alt="" /></a>
+							<article >
+								<a href="images/loft-girigiri crop.jpg" class="image fit"><img class="image" img src="images/loft-girigiri crop.jpg" title="A cyberpunk loft in isometric view." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/Illustration167.jpg" class="image fit"><img src="images/Illustration167.jpg" title="Tree-house apartments inspired by daisugi trees. An ukiyo-e inspired design of a fanatasy tree." alt="" /></a>
+							<article >
+								<a href="images/Illustration167.jpg" class="image fit"><img class="image" img src="images/Illustration167.jpg" title="Tree-house apartments inspired by daisugi trees. An ukiyo-e inspired design of a fanatasy tree." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/sentry_3 render.jpg" class="image fit"><img src="images/sentry_3 render.jpg" title="A design for a sentry-type robot. First designed in Gravity Sketch using VR along with 2 variations and then rendered in Photoshop." alt="" /></a>
+							<article >
+								<a href="images/sentry_3 render.jpg" class="image fit"><img class="image" img src="images/sentry_3 render.jpg" title="A design for a sentry-type robot. First designed in Gravity Sketch using VR along with 2 variations and then rendered in Photoshop." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/smoking girl.jpg" class="image fit"><img src="images/smoking girl.jpg" title="A cool girl in a pose with a cigarette." alt="" /></a>
+							<article >
+								<a href="images/smoking girl.jpg" class="image fit"><img class="image" img src="images/smoking girl.jpg" title="A cool girl in a pose with a cigarette." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/coffee break.jpg" class="image fit"><img src="images/coffee break.jpg" title="Character posing with a cup of coffee." alt="" /></a>
+							<article >
+								<a href="images/coffee break.jpg" class="image fit"><img class="image" img src="images/coffee break.jpg" title="Character posing with a cup of coffee." alt="" /></a>
 							</article>	
-							<article class="from-left">
-								<a href="images/tired warrior.jpg" class="image fit"><img src="images/tired warrior.jpg" title="A sketch of an old warrior type character." alt="" /></a>
+							<article >
+								<a href="images/tired warrior.jpg" class="image fit"><img class="image" img src="images/tired warrior.jpg" title="A sketch of an old warrior type character." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/chunibyo.jpg" class="image fit"><img src="images/chunibyo.jpg" title="A eccentric girl striking a pose posing" alt="" /></a>
+							<article >
+								<a href="images/chunibyo.jpg" class="image fit"><img class="image" img src="images/chunibyo.jpg" title="A eccentric girl striking a pose posing" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/scary girl.jpg" class="image fit"><img src="images/scary girl.jpg" title="Creepy character render." alt="" /></a>
+							<article >
+								<a href="images/scary girl.jpg" class="image fit"><img class="image" img src="images/scary girl.jpg" title="Creepy character render." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/molten creature.jpg" class="image fit"><img src="images/molten creature.jpg" title="Creepy creature with a molten face." alt="" /></a>
-							</article>
-							
-							<!--<article class="from-left">
-								<a href="images/ship.jpg" class="image fit"><img src="images/ship.jpg" title="A concept of combining an old fishing-boat and futuristic airship elements." alt="" /></a>
-							</article>-->
-							<article class="from-left">
-								<a href="images/photo_2021-11-17_21-39-06.jpg" class="image fit"><img src="images/photo_2021-11-17_21-39-06.jpg" title="8 different Alien heads." alt="" /></a>
-							</article>
-							<article class="from-left">
-								<a href="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" class="image fit"><img src="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" title="Ink on Paper" alt="" /></a>
-							</article>
-							<article class="from-left">
-								<a href="images/The first battle of Vogler.jpg" class="image fit"><img src="images/The first battle of Vogler.jpg" title="Compilation of Scenes from a DnD campaign" alt="" /></a>
-							</article>
-							<article class="from-left">
-								<a href="images/death of fildo.png" class="image fit"><img src="images/death of fildo.png" title="Scene from personal DnD campaign" alt="" /></a>
-							</article>
-							<article class="from-left">
-								<a href="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" class="image fit"><img src="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" title="Character inspired by Y2K aesthetic" alt="" /></a>
-							</article>
-							<article class="from-left">
-								<a href="images/flowers.png" class="image fit"><img src="images/flowers.png" title="Girl with flowers" alt="" /></a>
-							</article>
-							<article class="from-left">
-								<a href="images/filinorNew3_2023-11-05-13-28-14.png" class="image fit"><img src="images/filinorNew3_2023-11-05-13-28-14.png" title="3D sculpt of a figurine" alt="" /></a>
+							<article >
+								<a href="images/molten creature.jpg" class="image fit"><img class="image" img src="images/molten creature.jpg" title="Creepy creature with a molten face." alt="" /></a>
 							</article>
 							
-							<article class="from-left">
-								<a href="images/IMG_20231210_123440_691.png" class="image fit"><img src="images/IMG_20231210_123440_691.png" title="Mech sprining into action" alt="" /></a>
+							<!--<article >
+								<a href="images/ship.jpg" class="image fit"><img class="image" img src="images/ship.jpg" title="A concept of combining an old fishing-boat and futuristic airship elements." alt="" /></a>
+							</article>--><!-- 
+							<article >
+								<a href="images/photo_2021-11-17_21-39-06.jpg" class="image fit"><img class="image" img src="images/photo_2021-11-17_21-39-06.jpg" title="8 different Alien heads." alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/poster_A3_revized.png" class="image fit"><img src="images/poster_A3_revized.png" title="Poster commission for local role-playing event" alt="" /></a>
+							<article >
+								<a href="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" class="image fit"><img class="image" img src="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" title="Ink on Paper" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/IMG_20231210_123438_487.png" class="image fit"><img src="images/IMG_20231210_123438_487.png" title="Character concept" alt="" /></a>
+							<article >
+								<a href="images/The first battle of Vogler.jpg" class="image fit"><img class="image" img src="images/The first battle of Vogler.jpg" title="Compilation of Scenes from a DnD campaign" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/IMG_20231210_123438_897.png" class="image fit"><img src="images/IMG_20231210_123438_897.png" title="Angelic figure escaping an explosion" alt="" /></a>
+							<article >
+								<a href="images/death of fildo.png" class="image fit"><img class="image" img src="images/death of fildo.png" title="Scene from personal DnD campaign" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-15_22-28-25.jpg" class="image fit"><img src="images/photo_2023-12-15_22-28-25.jpg" title="Character having a smoke" alt="" /></a>
+							<article >
+								<a href="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" class="image fit"><img class="image" img src="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" title="Character inspired by Y2K aesthetic" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-15_22-28-25 (2).jpg" class="image fit"><img src="images/photo_2023-12-15_22-28-25 (2).jpg" title="Woman with a fancy hat" alt="" /></a>
+							<article >
+								<a href="images/flowers.png" class="image fit"><img class="image" img src="images/flowers.png" title="Girl with flowers" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-15_22-28-25 (3).jpg" class="image fit"><img src="images/photo_2023-12-15_22-28-25 (3).jpg" title="Girl with katana" alt="" /></a>
+							<article >
+								<a href="images/filinorNew3_2023-11-05-13-28-14.png" class="image fit"><img class="image" img src="images/filinorNew3_2023-11-05-13-28-14.png" title="3D sculpt of a figurine" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-15_22-28-25 (4).jpg" class="image fit"><img src="images/photo_2023-12-15_22-28-25 (4).jpg" title="Creepy girl" alt="" /></a>
+							
+							<article >
+								<a href="images/IMG_20231210_123440_691.png" class="image fit"><img class="image" img src="images/IMG_20231210_123440_691.png" title="Mech sprining into action" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-09_15-08-33.jpg" class="image fit"><img src="images/photo_2023-12-09_15-08-33.jpg" title="Girl with swords and burning hat" alt="" /></a>
+							<article >
+								<a href="images/poster_A3_revized.png" class="image fit"><img class="image" img src="images/poster_A3_revized.png" title="Poster commission for local role-playing event" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-09_15-07-13.jpg" class="image fit"><img src="images/photo_2023-12-09_15-07-13.jpg" title="Futuristic speeder concept" alt="" /></a>
+							<article >
+								<a href="images/IMG_20231210_123438_487.png" class="image fit"><img class="image" img src="images/IMG_20231210_123438_487.png" title="Character concept" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-09_15-07-13 (2).jpg" class="image fit"><img src="images/photo_2023-12-09_15-07-13 (2).jpg" title="Shadowrun Orc concept" alt="" /></a>
+							<article >
+								<a href="images/IMG_20231210_123438_897.png" class="image fit"><img class="image" img src="images/IMG_20231210_123438_897.png" title="Angelic figure escaping an explosion" alt="" /></a>
 							</article>
-							<article class="from-left">
-								<a href="images/photo_2023-12-10_02-48-10.jpg" class="image fit"><img src="images/photo_2023-12-10_02-48-10.jpg" title="Cyberpunk guy with katana" alt="" /></a>
+							<article >
+								<a href="images/photo_2023-12-15_22-28-25.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25.jpg" title="Character having a smoke" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-15_22-28-25 (2).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (2).jpg" title="Woman with a fancy hat" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-15_22-28-25 (3).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (3).jpg" title="Girl with katana" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-15_22-28-25 (4).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (4).jpg" title="Creepy girl" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-09_15-08-33.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-08-33.jpg" title="Girl with swords and burning hat" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-09_15-07-13.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13.jpg" title="Futuristic speeder concept" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-09_15-07-13 (2).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13 (2).jpg" title="Shadowrun Orc concept" alt="" /></a>
+							</article>
+							<article >
+								<a href="images/photo_2023-12-10_02-48-10.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-10_02-48-10.jpg" title="Cyberpunk guy with katana" alt="" /></a>
 							</article>
 							
 						</div>
 
 				</div>
 			</section>
-		<!-- Two -->
+		<!-- Two --><!-- 
 		<section id="two" class="main style2 left dark fullscreen">
 			<div class="content box style2">
 				<header>
@@ -209,7 +419,7 @@
 		</section>
 
 
-		<!-- One -->
+		<!-- One --><!-- 
 		<section id="three" class="main style2 right dark fullscreen">
 			<div class="content box style2">
 				<header>
@@ -221,7 +431,7 @@
 			</div>
 			<a href="#work" class="button style2 down anchored">Next</a>
 		</section>
-					<!-- Contact -->
+					<!-- Contact --><!-- 
 		<section id="hobby" class="main style3 secondary">
 			<div class="content">
 				<header>
@@ -240,7 +450,7 @@
 						I use Cubase as my DAW and Native Instruments for various VSTs.<br><br>
 						For a VR Rhythm game I developed in Unity I wrote this song, which you can check out if you want.<br>
 						<br>
-						<!-- <img src="images/beatspeeder square.png", width="200px"><br> -->
+						<!-- <img src="images/beatspeeder square.png", width="200px"><br> --><!-- 
 						<audio controls>
 							<source src="images/space-race_final_v2.mp3" type="audio/mpeg">
 						  Your browser does not support the audio element.
@@ -263,7 +473,7 @@
 <!-- 					
 						<br>
 						<br>
-						<img src="images/japan comp new.png", width="400px"><br> -->
+						<img src="images/japan comp new.png", width="400px"><br> --><!-- 
 					</p>
 				</div>
 				<a href="#two" class="button style2 down anchored">Next</a>
@@ -303,6 +513,58 @@
 				</p>
 			</div>
 		</section> -->
+
+				<!-- About me -->
+				<style>
+					.links {
+						text-align: center;
+						margin-bottom: 20px; /* Adjust margin as needed */
+						
+				background: #f5f6f7;
+					}
+				</style>
+				
+				<!-- About me -->
+				<div class="links">
+					<p>Here are some further links to check out:</p>
+				</div>
+				<section id="contact" class="main style3 secondary">
+					<div class="content">
+						
+						<header>
+							<h2>		<nav>
+								<ul>
+									<li><a href="images/CV_Tobias_Geib.pdf" download><strong>CV</strong></a>
+										</li>	
+								</ul>
+								</nav>
+							</h2>
+							</header>
+					</div>
+
+			<div class="content">
+				<header>
+					<h2><nav>
+						<ul>
+							<li><a href="/index.html">About Me</a></li>	
+						</ul>
+						</nav>
+					</h2>
+					</header>
+			</div>
+
+			
+			<div class="content">
+				<header>
+					<h2><nav>
+						<ul>
+							<li><a href="/projects.html">Projects</a></li>	
+						</ul>
+						</nav>
+					</h2>
+					</header>
+			</div>
+		</section>
 
 
 

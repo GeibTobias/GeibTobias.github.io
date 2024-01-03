@@ -69,6 +69,7 @@
 								var maxWidth = Math.max(...Array.from(logos).map(logo => logo.clientWidth));					
 								Array.from(logos).forEach(function(logo) {
 									var widthDiff = (maxWidth - logo.clientWidth) * .5 + 10;
+										widthDiff = Math.min(20, widthDiff);
 									logo.style.marginRight = widthDiff + 'px';
 									logo.style.marginLeft = widthDiff + 'px';
 								});
@@ -110,6 +111,7 @@
 								var maxWidth = Math.max(...Array.from(logos).map(logo => logo.clientWidth));					
 								Array.from(logos).forEach(function(logo) {
 									var widthDiff = (maxWidth - logo.clientWidth) * .5 + 10;
+										widthDiff = Math.min(20, widthDiff);
 									logo.style.marginRight = widthDiff + 'px';
 									logo.style.marginLeft = widthDiff + 'px';
 								});
@@ -155,6 +157,7 @@
 								var maxWidth = Math.max(...Array.from(logos).map(logo => logo.clientWidth));					
 								Array.from(logos).forEach(function(logo) {
 									var widthDiff = (maxWidth - logo.clientWidth) * .5 + 10;
+										widthDiff = Math.min(20, widthDiff);
 									logo.style.marginRight = widthDiff + 'px';
 									logo.style.marginLeft = widthDiff + 'px';
 								});
@@ -195,6 +198,7 @@
 								var maxWidth = Math.max(...Array.from(logos).map(logo => logo.clientWidth));					
 								Array.from(logos).forEach(function(logo) {
 									var widthDiff = (maxWidth - logo.clientWidth) * .5 + 10;
+									widthDiff = Math.min(20, widthDiff);
 									logo.style.marginRight = widthDiff + 'px';
 									logo.style.marginLeft = widthDiff + 'px';
 								});

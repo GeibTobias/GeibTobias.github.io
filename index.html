@@ -1,594 +1,1916 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-89SBZBCMS4"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Moves On: A 2D Roguelike Platformer</title>
+<meta name="description" content="Time Moves On: a 2D roguelike platformer where speed bends time and friends change everything. Interactive game design document showcase.">
+<link rel="icon" type="image/png" href="assets/kudo%20main.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TIME MOVES ON / GDD SHOWCASE
+   ============================================================ */
+:root{
+  --bg:#f4ecdd;
+  --ink:#1d1a15;
+  --accent:#e8742c;
+  --accent-2:#7b5cff;
+  --line:rgba(29,26,21,.14);
+  --card:#fffaf0;
+  --radius:22px;
+  --kull:#b18cff;
+  --brunn:#6fb3ff;
+  --frun:#8fd398;
+  --saus:#ff7a6e;
+  --saus-pink:#ff7ad9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  overflow-x:hidden;
+  transition:background-color 1s cubic-bezier(.4,0,.2,1),color 1s cubic-bezier(.4,0,.2,1);
+  cursor:none;
+}
+@media (hover:none),(pointer:coarse){ body{cursor:auto} .cursor,.cursor-dot{display:none} }
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:#fff}
+
+/* ------- themes (the journey) ------- */
+body[data-theme="dawn"]{--bg:#f4ecdd;--ink:#1d1a15;--line:rgba(29,26,21,.14);--card:#fffaf0}
+body[data-theme="dusk"]{--bg:#231c2e;--ink:#f3ecff;--line:rgba(243,236,255,.16);--card:#2d2440}
+body[data-theme="brunn"]{--bg:#d9ecfa;--ink:#13293e;--line:rgba(19,41,62,.15);--card:#eef7ff;--accent:#2e7cc7}
+body[data-theme="frun"]{--bg:#e9f3da;--ink:#1d2a16;--line:rgba(29,42,22,.15);--card:#f7fcef;--accent:#3f9e52}
+body[data-theme="saus"]{--bg:#0b0c1e;--ink:#d9f6ff;--line:rgba(217,246,255,.14);--card:#141631;--accent:#5fe0e0}
+body[data-theme="night"]{--bg:#0a0c14;--ink:#efeaf6;--line:rgba(239,234,246,.13);--card:#131628;--accent:#7b5cff}
+
+/* ------- cursor ------- */
+.cursor,.cursor-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;will-change:transform}
+.cursor-star{
+  position:absolute;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;overflow:visible;
+  fill:#ffd23f;opacity:.6;
+  filter:drop-shadow(0 0 6px rgba(255,205,70,.55));
+  animation:twinkle 2.1s ease-in-out infinite;
+  transition:width .35s,height .35s,margin .35s,opacity .35s,fill .35s,filter .35s,stroke-width .3s;
+}
+.cursor.is-hover .cursor-star{
+  width:56px;height:56px;margin:-28px 0 0 -28px;opacity:.9;
+  fill:#fff;filter:drop-shadow(0 0 11px rgba(255,255,255,.75));
+}
+.cursor-star.sm{
+  width:14px;height:14px;margin:-7px 0 0 -7px;fill:#ffd23f;opacity:1;
+  stroke:#0b0b0b;stroke-width:14;stroke-linejoin:round;paint-order:stroke;
+  filter:drop-shadow(0 0 6px rgba(255,205,70,.75));
+  animation:twinkle 2.7s ease-in-out infinite reverse;
+}
+.cursor-dot.is-hover .cursor-star.sm{stroke-width:0}
+@keyframes twinkle{
+  0%,100%{transform:rotate(-10deg) scale(.85)}
+  50%{transform:rotate(10deg) scale(1.08)}
+}
+
+/* ------- nav ------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 4vw;mix-blend-mode:normal;
+  transition:transform .5s cubic-bezier(.6,0,.2,1);
+}
+.nav.is-hidden{transform:translateY(-110%)}
+.nav-logo img{height:54px;width:auto;filter:drop-shadow(0 3px 12px rgba(60,80,160,.3));transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.nav-logo:hover img{transform:scale(1.06)}
+.nav-links{display:flex;gap:26px;align-items:center;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.nav-links a{position:relative;padding:4px 0;opacity:.75;transition:opacity .3s}
+.nav-links a:hover{opacity:1}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;height:1.5px;width:0;background:var(--accent);transition:width .35s cubic-bezier(.6,0,.2,1)}
+.nav-links a:hover::after{width:100%}
+.btn-gdd{
+  border:1.5px solid var(--ink);border-radius:999px;padding:10px 20px!important;opacity:1!important;
+  transition:background .3s,color .3s,border-color 1s;
+}
+.btn-gdd:hover{background:var(--ink);color:var(--bg)}
+.btn-gdd::after{display:none}
+@media(max-width:760px){.nav-links a:not(.btn-gdd){display:none}}
+
+/* ------- generic layout ------- */
+.section{position:relative;padding:16vh 6vw}
+.container{max-width:1280px;margin:0 auto}
+.label{
+  display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;opacity:.65;margin-bottom:28px;
+}
+.label::before{content:"";width:34px;height:1.5px;background:var(--accent)}
+h1,h2,h3,.display{font-family:'Unbounded',sans-serif}
+h2{font-size:clamp(30px,4.6vw,64px);font-weight:800;line-height:1.06;letter-spacing:-.01em}
+.lead{font-size:clamp(16px,1.45vw,21px);line-height:1.65;max-width:62ch;opacity:.85}
+.reveal{opacity:0;transform:translateY(46px)}
+.reveal-img{clip-path:inset(100% 0 0 0)}
+
+/* ------- hero ------- */
+.hero{
+  min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;
+  position:relative;overflow:hidden;padding:0 4vw 7vh;
+}
+.hero-stage{position:absolute;inset:-12% -4%;z-index:0;will-change:transform}
+.hero-layer{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 30%;opacity:0;will-change:transform,opacity;
+}
+.hero-l-friends,.hero-l-kudo{pointer-events:none}
+.hero-fade{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(244,236,221,0) 34%,rgba(244,236,221,.5) 74%,var(--bg) 99%);
+}
+.hero-logo-wrap{
+  position:absolute;z-index:2;left:0;right:0;top:1.5%;margin-inline:auto;
+  width:min(460px,46vw);display:flex;align-items:center;justify-content:center;
+  pointer-events:none;isolation:isolate;
+}
+.hero-logo-glow{
+  position:absolute;inset:-30% -18%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(10,8,24,.42),rgba(10,8,24,.16) 46%,transparent 70%);
+  filter:blur(30px);
+}
+.hero-logo{
+  position:relative;width:100%;height:auto;opacity:0;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 10px 26px rgba(40,30,70,.4)) drop-shadow(0 0 30px rgba(110,150,255,.25));
+}
+@media(max-width:760px){.hero-logo-wrap{top:3%;width:62vw}}
+.visually-hidden{
+  position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+.hero-inner{position:relative;z-index:2}
+.hero-kicker{
+  font-size:clamp(15px,2.1vw,20px);letter-spacing:.3em;text-transform:uppercase;font-weight:1000;
+  margin-bottom:2.2vh;opacity:0;
+}
+.hero-sub{
+  display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end;justify-content:space-between;
+  margin-top:4vh;opacity:0;
+}
+.hero-sub p{font-size:clamp(15px,1.4vw,20px);line-height:1.55;max-width:46ch;font-weight:500}
+.hero-tags{display:flex;gap:10px;flex-wrap:wrap}
+.tag{
+  border:1.5px solid var(--ink);border-radius:999px;padding:8px 16px;font-size:12px;
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  transition:background .3s,color .3s;
+}
+.tag:hover{background:var(--ink);color:var(--bg)}
+.scroll-cue{
+  position:absolute;left:0;right:0;bottom:4vh;margin-inline:auto;width:max-content;z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:700;opacity:0;
+}
+.scroll-cue .wheel{width:1.5px;height:54px;background:var(--ink);position:relative;overflow:hidden}
+.scroll-cue .wheel::after{
+  content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--accent);
+  animation:drip 1.8s cubic-bezier(.6,0,.2,1) infinite;
+}
+@keyframes drip{to{top:110%}}
+@media(max-width:760px){.scroll-cue{display:none}}
+
+/* ------- marquee ------- */
+.marquee{
+  border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);
+  padding:18px 0;overflow:hidden;white-space:nowrap;position:relative;z-index:2;
+  background:var(--bg);transition:background 1s,border-color 1s;
+}
+.marquee-track{display:inline-flex;gap:0;will-change:transform}
+.marquee span{
+  font-family:'Unbounded',sans-serif;font-size:clamp(16px,2vw,26px);font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;padding-right:18px;
+}
+.marquee span i{font-style:normal;color:var(--accent);padding-left:18px}
+
+/* ------- pitch ------- */
+.pitch-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:6vw;align-items:center}
+@media(max-width:900px){.pitch-grid{grid-template-columns:1fr}}
+.pitch-art{position:relative}
+.pitch-art img{border-radius:var(--radius);box-shadow:0 30px 70px -30px rgba(0,0,0,.4)}
+.pitch-art .float-kudo{
+  position:absolute;width:25%;right:-4%;bottom:-7%;filter:drop-shadow(0 14px 24px rgba(0,0,0,.3));
+  box-shadow:none;border-radius:0;
+}
+.stats-band{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:12vh;
+  border:1.5px solid var(--ink);border-radius:var(--radius);overflow:hidden;
+}
+@media(max-width:760px){.stats-band{grid-template-columns:repeat(2,1fr)}}
+.stat{
+  background:var(--card);padding:34px 26px;transition:background 1s;
+  outline:1px solid var(--line);
+}
+.stat .num{font-family:'Unbounded',sans-serif;font-size:clamp(34px,4vw,58px);font-weight:800;line-height:1}
+.stat .num em{font-style:normal;color:var(--accent);font-size:.6em}
+.stat .cap{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.6;margin-top:10px}
+
+/* ------- pillars ------- */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:7vh}
+@media(max-width:900px){.pillars{grid-template-columns:1fr}}
+.pillar{
+  background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
+  padding:40px 32px 36px;position:relative;overflow:hidden;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s,background 1s,border-color 1s;
+  transform-style:preserve-3d;will-change:transform;
+}
+.pillar:hover{box-shadow:0 30px 60px -25px rgba(0,0,0,.35)}
+.pillar .idx{
+  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--accent);
+  letter-spacing:.2em;
+}
+.pillar h3{font-size:clamp(20px,1.8vw,26px);font-weight:800;margin:18px 0 14px;line-height:1.15}
+.pillar p{font-size:15px;line-height:1.65;opacity:.78}
+.pillar .glyph{
+  position:absolute;right:-18px;bottom:-26px;font-family:'Unbounded',sans-serif;
+  font-size:130px;font-weight:900;opacity:.06;line-height:1;pointer-events:none;
+}
+
+/* ------- world ------- */
+.world-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:5vw;align-items:center}
+@media(max-width:900px){.world-wrap{grid-template-columns:1fr}}
+.world-map{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 90px -35px rgba(0,0,0,.55)}
+.world-map img{transform:scale(1.12);will-change:transform}
+.map-cap{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;margin:0;padding:36px 22px 16px;
+  background:linear-gradient(transparent,rgba(8,7,18,.82));color:#f3eeff;
+  font-size:12.5px;letter-spacing:.03em;text-align:center;pointer-events:none;
+}
+.lore-list{display:flex;flex-direction:column;gap:0;margin-top:5vh}
+.lore-item{border-top:1.5px solid var(--line);padding:26px 0;transition:border-color 1s}
+.lore-item:last-child{border-bottom:1.5px solid var(--line)}
+.lore-item h4{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;display:flex;gap:14px;align-items:baseline}
+.lore-item h4 i{font-style:normal;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.lore-item p{font-size:14.5px;line-height:1.6;opacity:.75;margin-top:10px;max-width:56ch}
+
+/* ------- kudo ------- */
+.kudo-sec{overflow:hidden}
+.kudo-grid{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
+@media(max-width:900px){.kudo-grid{grid-template-columns:1fr}}
+.kudo-art{position:relative;display:flex;justify-content:center}
+.kudo-art .main{width:78%;filter:drop-shadow(0 30px 50px rgba(0,0,0,.3));will-change:transform}
+.kudo-ring{
+  position:absolute;inset:6% 12%;border:1.5px dashed var(--accent);border-radius:50%;
+  animation:spin 26s linear infinite;opacity:.5;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.kstat-header{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin:4vh 0 16px}
+.kudo-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:0}
+.kstat{
+  border:1.5px solid var(--line);border-radius:16px;padding:18px 20px;background:var(--card);
+  transition:background 1s,border-color 1s;
+}
+.kstat b{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:800;color:var(--accent)}
+.kstat span{display:block;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.6;margin-top:6px}
+
+/* ------- mechanics / widgets ------- */
+.widgets{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:7vh}
+@media(max-width:980px){.widgets{grid-template-columns:1fr}}
+.widget{
+  background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
+  padding:38px 34px;transition:background 1s,border-color 1s;
+}
+.widget h3{font-size:clamp(19px,1.7vw,24px);font-weight:800;margin-bottom:8px}
+.widget .hint{font-size:13px;opacity:.6;margin-bottom:30px;letter-spacing:.04em}
+
+/* time dial */
+.dial-row{display:flex;gap:36px;align-items:center;flex-wrap:wrap}
+.dial{position:relative;width:170px;height:170px;flex:none}
+.dial svg{transform:rotate(-90deg)}
+.dial .tickno{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-size:44px;font-weight:800;
+}
+.dial-data{flex:1;min-width:220px}
+.dial-data .big{font-family:'Unbounded',sans-serif;font-size:clamp(26px,2.6vw,38px);font-weight:800;line-height:1.1}
+.dial-data .big i{font-style:normal;color:var(--accent)}
+.dial-data small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.55;margin-top:6px;margin-bottom:24px}
+.range-wrap{position:relative}
+.range-wrap::before{
+  content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:2px;height:15px;background:var(--ink);opacity:.32;border-radius:2px;pointer-events:none;z-index:0;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;position:relative;z-index:1;width:100%;height:3px;border-radius:99px;
+  background:linear-gradient(90deg,var(--accent) var(--fill,50%),var(--line) var(--fill,50%));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--ink);
+  border:3px solid var(--bg);box-shadow:0 0 0 1.5px var(--ink);transition:transform .2s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:50%;background:var(--ink);border:3px solid var(--bg);
+  box-shadow:0 0 0 1.5px var(--ink);cursor:pointer;
+}
+.range-caps{display:flex;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.1em;opacity:.5;margin-top:10px;text-transform:uppercase}
+
+/* parry widget */
+.parry-stage{
+  position:relative;height:230px;border:1.5px dashed var(--line);border-radius:18px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:24px;overflow:hidden;
+  transition:border-color 1s;
+}
+.parry-kudo{width:144px;will-change:transform;filter:drop-shadow(0 12px 22px rgba(0,0,0,.28))}
+.parry-cone{
+  position:absolute;width:120px;height:120px;left:50%;top:50%;opacity:0;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 55%,transparent),transparent 72%);
+  pointer-events:none;
+}
+.parry-fx{
+  position:absolute;left:50%;top:50%;font-family:'Unbounded',sans-serif;font-weight:800;
+  font-size:15px;color:var(--accent);opacity:0;pointer-events:none;white-space:nowrap;
+}
+.parry-btns{display:flex;gap:10px;flex-wrap:wrap}
+.pbtn{
+  flex:1;min-width:110px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+  font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;border-radius:999px;padding:13px 10px;cursor:none;
+  transition:background .25s,color .25s,border-color 1s;
+}
+.pbtn:hover,.pbtn.active{background:var(--ink);color:var(--bg)}
+.parry-desc{font-size:13.5px;line-height:1.6;opacity:.75;margin-top:18px;min-height:3.2em}
+
+/* ------- journey / plains ------- */
+.journey-intro{text-align:center;max-width:880px;margin:0 auto}
+.journey-intro .lead{margin:26px auto 0}
+.plain{
+  min-height:100svh;display:flex;align-items:center;padding:14vh 6vw;position:relative;overflow:hidden;
+}
+.plain-grid{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;max-width:1280px;margin:0 auto;width:100%}
+@media(max-width:900px){.plain-grid{grid-template-columns:1fr}}
+.plain-num{
+  font-family:'Unbounded',sans-serif;font-size:clamp(70px,10vw,150px);font-weight:900;
+  opacity:.08;position:absolute;top:6vh;right:5vw;line-height:1;pointer-events:none;
+}
+.plain h2 .accent{color:var(--accent)}
+.plain-art{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.55)}
+.plain-art img{transform:scale(1.15);will-change:transform}
+.plain-meta{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
+.plain-meta .tag{font-size:11px;padding:7px 14px}
+.plain p.desc{font-size:15.5px;line-height:1.7;opacity:.82;max-width:54ch}
+.plain .school-line{
+  margin-top:30px;padding-top:26px;border-top:1.5px solid var(--line);
+  display:flex;flex-direction:column;gap:20px;transition:border-color 1s;
+}
+.school-roster{display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px}
+.school-roster > img{height:94px;width:auto;flex:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.24))}
+.school-teacher{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none;margin-left:14px}
+.school-teacher .avatar{
+  width:134px;height:134px;border-radius:50%;overflow:hidden;flex:none;
+  background:radial-gradient(125% 125% at 50% 10%, color-mix(in srgb,var(--school,#888) 46%,transparent), color-mix(in srgb,var(--school,#888) 15%, var(--card)));
+  border:2.5px solid color-mix(in srgb,var(--school,#888) 58%, var(--line));
+  box-shadow:0 14px 30px -14px color-mix(in srgb,var(--school,#888) 70%, transparent);
+}
+.school-teacher .avatar img{width:100%;height:100%;object-fit:cover;object-position:50% 16%}
+.school-teacher .role{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.6;text-align:center;line-height:1.35}
+.school-teacher .role b{display:block;font-size:12.5px;letter-spacing:0;text-transform:none;opacity:1;margin-top:2px}
+.plain .school-line p{font-size:14.5px;line-height:1.6;opacity:.8}
+@media(max-width:760px){.school-roster > img{height:74px}.school-teacher .avatar{width:108px;height:108px}}
+
+/* ------- friends ------- */
+.friends-sec{position:relative;overflow:hidden;padding:16vh 0 0}
+.friends-head{padding:0 6vw;max-width:1280px;margin:0 auto 6vh}
+.friends-pin{height:100svh;display:flex;align-items:center;overflow:hidden}
+.friends-track{display:flex;gap:26px;padding:0 6vw;will-change:transform;transform:translateZ(0);backface-visibility:hidden}
+.fcard{
+  flex:none;width:min(330px,78vw);
+  background:
+    radial-gradient(118% 56% at 50% 15%, color-mix(in srgb,var(--school,#888) 32%,transparent), transparent 64%),
+    var(--card);
+  border:1.5px solid color-mix(in srgb,var(--school,#888) 28%, var(--line));
+  border-radius:var(--radius);padding:26px;position:relative;overflow:hidden;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1),background 1s,border-color 1s,box-shadow .5s;
+  contain:layout paint;will-change:transform;
+}
+.fcard:hover{box-shadow:0 26px 54px -28px color-mix(in srgb,var(--school,#888) 60%, transparent)}
+.fcard:hover{transform:translateY(-12px) rotate(-1deg)}
+.fcard .school-dot{
+  position:absolute;top:22px;right:22px;font-size:10.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;padding:5px 12px;border-radius:99px;color:#101010;
+}
+.fcard img{
+  height:210px;width:100%;object-fit:contain;margin:18px 0 8px;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1);
+}
+.fcard:hover img{transform:scale(1.07) rotate(2deg)}
+.fcard h4{font-family:'Unbounded',sans-serif;font-size:19px;font-weight:800}
+.fcard .animal{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.55;margin-top:4px}
+.fcard .ability{
+  margin-top:14px;font-size:12.5px;font-weight:700;color:var(--accent);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.fcard .persona{font-size:13.5px;line-height:1.55;opacity:.72;margin-top:8px;min-height:3.1em}
+.fcard.outro{
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;
+  background:transparent;border-style:dashed;
+}
+.fcard.outro h4{font-size:24px;line-height:1.2}
+.fcard.outro p{font-size:14px;opacity:.7;line-height:1.6}
+
+/* ------- vestige ------- */
+.vestige{min-height:90svh;display:flex;align-items:center;text-align:center;position:relative;overflow:hidden}
+.vestige .container{max-width:980px}
+.vestige blockquote{
+  font-family:'Unbounded',sans-serif;font-size:clamp(22px,3.4vw,46px);font-weight:700;line-height:1.3;
+}
+.vestige blockquote .dim{opacity:.4}
+.vestige .v-art{display:flex;justify-content:center;gap:4vw;margin-top:7vh;align-items:flex-end}
+.vestige .v-art img{width:min(330px,40vw);filter:drop-shadow(0 24px 40px rgba(0,0,0,.45))}
+.vestige p.note{margin:5vh auto 0;font-size:14.5px;opacity:.65;max-width:52ch;line-height:1.7}
+
+/* ------- chancellors ------- */
+.chan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:7vh}
+@media(max-width:980px){.chan-grid{grid-template-columns:repeat(2,1fr)}}
+.chan{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  background:
+    radial-gradient(120% 78% at 50% 24%, color-mix(in srgb,var(--school,#888) 48%,transparent), transparent 72%),
+    color-mix(in srgb,var(--school,#888) 15%, var(--card));
+  border:1.5px solid color-mix(in srgb,var(--school,#888) 32%, var(--line));
+  aspect-ratio:3/4;transition:background 1s,border-color 1s;
+}
+.chan img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.chan:hover img{transform:scale(1.08)}
+.chan .veil{
+  position:absolute;inset:auto 0 0 0;padding:70px 20px 18px;
+  background:linear-gradient(180deg,transparent,rgba(7,9,16,.88));color:#f3efff;
+  transform:translateY(28%);transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.chan:hover .veil{transform:translateY(0)}
+.chan .veil b{font-family:'Unbounded',sans-serif;font-size:14px;display:block;line-height:1.3}
+.chan .veil i{font-style:normal;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;display:block;margin-top:5px}
+.chan .veil p{font-size:12px;line-height:1.5;opacity:0;margin-top:10px;transition:opacity .5s .1s}
+.chan:hover .veil p{opacity:.85}
+
+/* ------- roadmap ------- */
+.roadmap{position:relative}
+.timeline{position:relative;margin-top:8vh;padding-left:38px}
+.timeline::before{
+  content:"";position:absolute;left:8px;top:0;bottom:0;width:1.5px;background:var(--line);
+}
+.tl-progress{
+  position:absolute;left:8px;top:0;width:1.5px;height:0;background:var(--accent);
+  box-shadow:0 0 12px var(--accent);
+}
+.tl-item{position:relative;padding:0 0 7vh}
+.tl-item::before{
+  content:"";position:absolute;left:-37px;top:6px;width:13px;height:13px;border-radius:50%;
+  background:var(--bg);border:2.5px solid var(--accent);transition:background 1s;
+}
+.tl-item .when{font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+.tl-item h4{font-family:'Unbounded',sans-serif;font-size:clamp(17px,1.7vw,23px);font-weight:800;margin:8px 0 8px}
+.tl-item p{font-size:14px;line-height:1.6;opacity:.7;max-width:60ch}
+
+/* ------- footer ------- */
+.footer{
+  min-height:92svh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;position:relative;overflow:hidden;padding:14vh 6vw 6vh;
+}
+.footer h2{font-size:clamp(34px,6vw,92px);text-transform:uppercase;line-height:1.02}
+.footer .cta{
+  margin-top:6vh;display:inline-flex;align-items:center;gap:16px;
+  font-family:'Unbounded',sans-serif;font-size:clamp(14px,1.4vw,18px);font-weight:700;
+  border:1.5px solid var(--ink);border-radius:999px;padding:22px 44px;
+  transition:background .35s,color .35s,transform .35s;
+}
+.footer .cta:hover{background:var(--accent);border-color:var(--accent);color:#101010;transform:scale(1.04)}
+.footer .cta .arrow{transition:transform .35s}
+.footer .cta:hover .arrow{transform:translateX(6px)}
+.footer-meta{
+  margin-top:auto;padding-top:10vh;display:flex;gap:28px;flex-wrap:wrap;justify-content:center;align-items:center;
+  font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;opacity:.45;
+}
+.footer > *:not(.footer-gondola){position:relative;z-index:1}
+.footer-gondola{position:absolute;left:0;right:0;top:5%;z-index:0;pointer-events:none}
+.footer-gondola img{
+  position:absolute;left:0;top:0;width:clamp(180px,22vw,300px);height:auto;opacity:.92;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.45));animation:gondolaSlide 26s linear infinite;will-change:transform;
+}
+@keyframes gondolaSlide{from{transform:translateX(-360px)}to{transform:translateX(calc(100vw + 60px))}}
+.footer-playground{position:relative;width:100%;max-width:1180px;height:172px;margin:6vh auto 2vh;overflow:hidden;pointer-events:none}
+.footer-playground img{
+  position:absolute;left:0;bottom:0;height:100px;width:auto;transform-origin:bottom center;
+  will-change:transform;filter:drop-shadow(0 8px 14px rgba(0,0,0,.32));
+}
+@media(max-width:760px){.footer-playground{height:122px}.footer-playground img{height:70px}}
+
+/* stars for dark themes */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
+body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="dusk"] .stars{opacity:1}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.1}to{opacity:.8}}
+
+/* ------- kudo runner (time widget) ------- */
+.runner-stage{
+  position:relative;height:152px;margin-top:30px;border:1.5px dashed var(--line);
+  border-radius:18px;overflow:hidden;display:flex;align-items:center;
+  transition:border-color 1s;
+}
+.speedlines{
+  position:absolute;inset:0;width:200%;opacity:0;
+  background:repeating-linear-gradient(90deg,
+    transparent 0 46px,
+    color-mix(in srgb,var(--accent) 55%,transparent) 46px 88px);
+  -webkit-mask-image:repeating-linear-gradient(180deg,transparent 0 14px,#000 14px 18px);
+  mask-image:repeating-linear-gradient(180deg,transparent 0 14px,#000 14px 18px);
+  animation:linesMove var(--lineDur,1.2s) linear infinite;
+  will-change:transform;
+}
+@keyframes linesMove{to{transform:translateX(-50%)}}
+.runner-track{
+  position:absolute;left:0;right:0;bottom:0;height:48px;z-index:0;pointer-events:none;opacity:.4;
+  background-image:repeating-linear-gradient(90deg,
+    color-mix(in srgb,var(--ink) 38%,transparent) 0 3px,
+    transparent 3px var(--tileW,100px));
+  background-size:var(--tileW,100px) 100%;background-repeat:repeat-x;
+  -webkit-mask-image:linear-gradient(transparent,#000 58%);
+  mask-image:linear-gradient(transparent,#000 58%);
+}
+#runnerKudo{
+  position:relative;width:108px;margin-left:40px;z-index:2;
+  filter:url(#motionBlur);will-change:transform;
+}
+
+/* ------- friend modal ------- */
+.fmodal{position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;padding:4vw}
+.fmodal.open{display:flex}
+.fmodal-backdrop{
+  position:absolute;inset:0;background:rgba(5,6,12,.7);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.fmodal-panel{
+  position:relative;display:grid;grid-template-columns:1fr 1.05fr;width:min(940px,100%);
+  max-height:88svh;background:var(--card);border:1.5px solid var(--line);
+  border-radius:26px;overflow:hidden;box-shadow:0 50px 120px -30px rgba(0,0,0,.7);
+}
+@media(max-width:760px){.fmodal-panel{grid-template-columns:1fr;overflow-y:auto}}
+.fmodal-art{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  padding:34px;min-height:300px;
+  background:radial-gradient(circle at 50% 65%,color-mix(in srgb,var(--fmcolor,#e8742c) 32%,transparent),transparent 75%);
+}
+.fmodal-art::before{
+  content:"";position:absolute;inset:12% 14%;border:1.5px dashed color-mix(in srgb,var(--fmcolor,#e8742c) 60%,transparent);
+  border-radius:50%;animation:spin 30s linear infinite;
+}
+.fmodal-art img{position:relative;max-height:min(56svh,460px);width:auto;max-width:100%;object-fit:contain}
+.fmodal-info{padding:46px 44px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.fm-chip{
+  align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:6px 14px;border-radius:99px;color:#101010;background:var(--fmcolor,#e8742c);margin-bottom:18px;
+}
+.fmodal-info h3{font-size:clamp(24px,2.6vw,34px);font-weight:800;line-height:1.1}
+.fmodal-info .animal{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.55;margin-top:6px}
+.fm-ability{
+  margin-top:22px;font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;
+  color:var(--fmcolor,var(--accent));text-transform:uppercase;letter-spacing:.05em;
+}
+.fm-tagline{font-size:16px;line-height:1.5;font-weight:600;margin-top:12px}
+.fm-levels{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.fm-level{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .3s,background .3s}
+.fm-level[data-open="true"]{border-color:color-mix(in srgb,var(--fmcolor,#888) 55%,var(--line));background:color-mix(in srgb,var(--fmcolor,#888) 12%,transparent)}
+.fm-level-head{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;background:none;border:0;cursor:none;text-align:left;
+  font-family:'Space Grotesk',sans-serif;color:var(--ink);
+}
+.fm-level-tag{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;opacity:.72}
+.fm-level[data-open="true"] .fm-level-tag{opacity:1}
+.fm-level-tag b{color:var(--fmcolor,inherit)}
+.fm-level-plus{font-size:17px;line-height:1;opacity:.55;transition:transform .3s}
+.fm-level[data-open="true"] .fm-level-plus{transform:rotate(45deg);opacity:.9}
+.fm-level-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.fm-level[data-open="true"] .fm-level-body{grid-template-rows:1fr}
+.fm-level-inner{overflow:hidden;min-height:0}
+.fm-level-inner p{margin:0;padding:0 16px 13px;font-size:13.5px;line-height:1.55;opacity:.85}
+.fm-persona{
+  font-size:13.5px;line-height:1.6;opacity:.6;margin-top:18px;font-style:italic;
+  border-left:2px solid var(--fmcolor,var(--accent));padding-left:14px;
+}
+.fmodal-close{
+  position:absolute;top:16px;right:16px;z-index:3;width:44px;height:44px;border-radius:50%;
+  border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;
+  cursor:none;transition:background .3s,color .3s;
+}
+.fmodal-close:hover{background:var(--ink);color:var(--bg)}
+
+/* ------- signup (mailing list + careers) ------- */
+.signup-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;width:min(920px,100%);margin-top:11vh;
+}
+@media(max-width:760px){.signup-grid{grid-template-columns:1fr}}
+.signup-card{
+  background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
+  padding:34px 30px;text-align:left;transition:background 1s,border-color 1s;
+}
+.signup-card h3{font-size:18px;font-weight:800;margin-bottom:8px}
+.signup-card>p{font-size:13.5px;line-height:1.6;opacity:.7;margin-bottom:22px}
+.signup-form{display:flex;gap:10px}
+.signup-form input{
+  flex:1;min-width:0;background:transparent;border:1.5px solid var(--line);border-radius:999px;
+  padding:13px 20px;font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--ink);
+  outline:none;transition:border-color .3s;
+}
+.signup-form input:focus{border-color:var(--accent)}
+.signup-form input::placeholder{color:var(--ink);opacity:.4}
+.signup-form button{
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:999px;
+  padding:13px 22px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .3s,color .3s;
+}
+.signup-form button:hover{background:var(--accent);border-color:var(--accent);color:#101010}
+.signup-ok{font-size:14px;font-weight:600;color:var(--accent)}
+.signup-ok[hidden]{display:none}
+.signup-note{font-size:11px;letter-spacing:.08em;opacity:.45;margin-top:14px}
+.eo-embed{margin-top:12px}
+.point-left{display:flex;align-items:center;gap:12px;margin-top:22px}
+.point-arrow{display:inline-block;font-size:30px;line-height:1;color:var(--accent);font-weight:700;animation:nudgeLeft 1.2s ease-in-out infinite}
+.point-text{font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.arrow-v{display:none}
+@keyframes nudgeLeft{0%,100%{transform:translateX(0)}50%{transform:translateX(-7px)}}
+@keyframes nudgeUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media(max-width:760px){.arrow-h{display:none}.arrow-v{display:inline-block;animation-name:nudgeUp}}
+
+/* ------- gondola ------- */
+.gondola-feature-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:7vh}
+@media(max-width:820px){.gondola-feature-pair{grid-template-columns:1fr}}
+.gondola-feature{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 30px 72px -34px rgba(0,0,0,.58);
+}
+.gondola-feature img{width:100%;height:100%;display:block;aspect-ratio:16/10;object-fit:cover;transform:scale(1.1);will-change:transform}
+.gondola-feature-cap{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;padding:48px 32px 26px;
+  background:linear-gradient(transparent,rgba(8,7,18,.86));color:#f3eeff;pointer-events:none;
+}
+.gondola-feature-cap b{font-family:'Unbounded',sans-serif;font-size:clamp(16px,1.6vw,21px);display:block}
+.gondola-feature-cap span{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.72;margin-top:7px;display:block}
+.gondola-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
+@media(max-width:760px){.gondola-trio{grid-template-columns:1fr}}
+.gondola-card{
+  position:relative;border-radius:var(--radius);overflow:hidden;background:var(--card);
+  border:1.5px solid var(--line);transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s,background 1s,border-color 1s;
+}
+.gondola-card:hover{transform:translateY(-10px);box-shadow:0 28px 56px -26px rgba(0,0,0,.5)}
+.gondola-card img{width:100%;aspect-ratio:1.16/1;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.gondola-card:hover img{transform:scale(1.07)}
+.gondola-card figcaption{padding:18px 20px 20px}
+.gondola-card figcaption b{font-family:'Unbounded',sans-serif;font-size:15px;display:block}
+.gondola-card figcaption span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:5px;display:block}
+.chill-audio{
+  position:absolute;top:16px;right:16px;z-index:3;display:inline-flex;align-items:center;gap:11px;
+  padding:8px 14px;border-radius:999px;border:1.5px solid rgba(255,255,255,.45);
+  background:rgba(10,12,28,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#f3eeff;
+  transition:background .3s,border-color .3s;
+}
+.chill-audio:hover{background:rgba(20,24,48,.78);border-color:rgba(255,255,255,.7)}
+.chill-play{
+  display:inline-flex;align-items:center;gap:9px;padding:0;background:none;border:0;color:inherit;cursor:none;
+  font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+}
+.chill-note{font-size:15px;line-height:1}
+.chill-play.is-playing .chill-note{display:none}
+.chill-play .eq{display:none;align-items:flex-end;gap:2px;height:13px}
+.chill-play.is-playing .eq{display:inline-flex}
+.chill-play .eq i{width:3px;height:4px;background:currentColor;border-radius:1px}
+.chill-play.is-playing .eq i{animation:eqBounce .9s ease-in-out infinite}
+.chill-play.is-playing .eq i:nth-child(2){animation-delay:.18s}
+.chill-play.is-playing .eq i:nth-child(3){animation-delay:.36s}
+.chill-play.is-playing .eq i:nth-child(4){animation-delay:.12s}
+@keyframes eqBounce{0%,100%{height:3px}50%{height:13px}}
+.chill-divider{width:1.5px;height:18px;background:rgba(255,255,255,.3);flex:none}
+.chill-spk{flex:none;opacity:.85}
+.chill-vol{width:72px;height:3px;--fill:50%;background:linear-gradient(90deg,#fff var(--fill),rgba(255,255,255,.32) var(--fill))}
+.chill-vol::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:#fff;border:0;box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:none}
+.chill-vol::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:0;cursor:none}
+@media(max-width:760px){.chill-audio-label{display:none}.chill-vol{width:56px}}
+
+/* ------- godot badge ------- */
+.godot-badge{display:inline-flex;align-items:center;gap:9px}
+.godot-icon{width:22px;height:22px;display:inline-block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+.tag-godot{display:inline-flex;align-items:center;gap:6px}
+.godot-icon-small{width:15px;height:15px;display:block}
+.godot-icon-small{width:15px;height:15px;display:inline-block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+
+/* ------- studio (TobiLudo) ------- */
+.studio{margin-top:7vh;display:flex;flex-direction:column;align-items:center;gap:16px}
+.studio-by{font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;opacity:.55}
+.studio-lockup{position:relative;display:inline-block;line-height:0}
+.studio-lockup::before{
+  content:"";position:absolute;inset:-26% -20%;z-index:-1;
+  background:radial-gradient(ellipse at 50% 50%,rgba(180,200,255,.18),transparent 68%);
+  filter:blur(24px);
+}
+.studio-logo{
+  width:min(200px,52vw);height:auto;
+  filter:drop-shadow(0 10px 34px rgba(120,140,255,.4));
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.studio-lockup:hover .studio-logo{transform:translateY(-5px) scale(1.03)}
+.studio-fish{
+  position:absolute;right:-26px;bottom:16%;width:46px;height:auto;
+  animation:swim 5.5s ease-in-out infinite;
+}
+@keyframes swim{
+  0%{transform:translateX(0) scaleX(1)}
+  44%{transform:translateX(34px) scaleX(1)}
+  50%{transform:translateX(34px) scaleX(-1)}
+  94%{transform:translateX(0) scaleX(-1)}
+  100%{transform:translateX(0) scaleX(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+
+.strokeme {
+  color: rgb(24, 19, 12);
+  background-color: transparent;
+  text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
+}
+
+</style>
+</head>
+<body data-theme="dawn">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="motionBlur" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur id="motionBlurPrim" in="SourceGraphic" stdDeviation="0,0"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="cursor"><svg class="cursor-star" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 Q60 40 96 50 Q60 60 50 96 Q40 60 4 50 Q40 40 50 4 Z"/></svg></div>
+<div class="cursor-dot"><svg class="cursor-star sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 Q60 40 96 50 Q60 60 50 96 Q40 60 4 50 Q40 40 50 4 Z"/></svg></div>
+<div class="stars" aria-hidden="true"></div>
+
+<!-- ===================== NAV ===================== -->
+<nav class="nav">
+  <a class="nav-logo" href="#top" aria-label="TobiLudo, Time Moves On">
+    <img src="assets/tobiludo%20logo%20transparent.png" alt="TobiLudo">
+  </a>
+  <div class="nav-links">
+    <div class="strokeme">
+      <a href="#world" data-hover>World</a>
+      <a href="#mechanics" data-hover>Mechanics</a>
+      <a href="#journey" data-hover>Journey</a>
+      <a href="#gondola" data-hover>Gondola</a>
+      <a href="#friends" data-hover>Friends</a>
+      <a href="#roadmap" data-hover>Roadmap</a>
+      <a class="btn-gdd" role="button" tabindex="0" data-hover aria-disabled="true">Full GDD ↓</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero" id="top">
+  <div class="hero-stage">
+    <img class="hero-layer hero-l-bg" src="assets/splash%20new%20bg.jpg" alt="">
+    <img class="hero-layer hero-l-friends" src="assets/splash%20friends.png" alt="">
+    <img class="hero-layer hero-l-kudo" src="assets/splash%20kudo.png" alt="">
+    <div class="hero-fade"></div>
+  </div>
+  <div class="hero-logo-wrap">
+    <div class="hero-logo-glow"></div>
+    <h1 class="visually-hidden">Time Moves On</h1>
+    <img class="hero-logo" src="assets/tmo%20title%20trans%20small.png" alt="" aria-hidden="true">
+  </div>
+  <div class="hero-inner">
+    <p class="hero-kicker">Time Moves On - Prototype Pitch Deck</p>
+    <div class="hero-sub">
+      <p>A <b>time</b> bending 2D roguelike platformer where your <b>friends</b> will shape your run. Catch the next gondola. Pass the exams. Before time runs out.</p>
+      <div class="hero-tags">
+        <span class="tag" data-hover>Roguelike</span>
+        <span class="tag" data-hover>Precision Platformer</span>
+        <span class="tag tag-godot" data-hover><img class="godot-icon-small" src="assets/godot_icon_color.png" alt="Godot Engine">Godot</span>
+        <span class="tag" data-hover>PC</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><span class="wheel"></span></div>
+</header>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
+    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
+    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
+    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
+  </div>
+</div>
+
+<!-- ===================== PITCH ===================== -->
+<section class="section" id="pitch">
+  <div class="container">
+    <div class="pitch-grid">
+      <div>
+        <p class="label reveal">The Pitch</p>
+        <h2 class="reveal">A wizard cat,<br>three exams,<br>and a special timer </h2>
+        <p class="lead reveal" style="margin-top:26px">
+          Kudo the cat, must travel a fragmented floating world and pass the wizarding exam at three schools.
+          Friends met on the road join the party and grant new abilities. But every friend has their own
+          path, and the bus to the next destination will not wait. Time itself reacts to how you play: sustained speed stretches
+          time itself, so don't hesitate.
+        </p>
+      </div>
+      <div class="pitch-art reveal-img">
+        <img src="assets/splash%20new%20small.jpg" alt="Time Moves On key art">
+        
+        <img class="float-kudo" src="assets/friends%20vestige.png" alt="A friend's vestige critter" data-float>
+      </div>
+    </div>
+
+    <div class="stats-band">
+      <div class="stat reveal"><div class="num" data-count="12">0</div><div class="cap">Recruitable Friends</div></div>
+      <div class="stat reveal"><div class="num" data-count="3">0</div><div class="cap">Wizarding Exams</div></div>
+      <div class="stat reveal"><div class="num" data-count="9">0</div><div class="cap">Levels per Run</div></div>
+      <div class="stat reveal"><div class="num" data-count="17">0</div><div class="cap">Items</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PILLARS ===================== -->
+<section class="section" id="pillars">
+  <div class="container">
+    <p class="label reveal">Design Pillars</p>
+    <h2 class="reveal">Every decision<br>answers to three rules.</h2>
+    <div class="pillars">
+      <div class="pillar reveal" data-tilt>
+        <span class="idx">01</span><span class="glyph">↗</span>
+        <h3>Movement</h3>
+        <p>A physics-driven traversal system where momentum, direction and parrying combine into skill expression that grows across a run. Walls, floors and dissolving terrain all become tools.</p>
+      </div>
+      <div class="pillar reveal" data-tilt>
+        <span class="idx">02</span><span class="glyph">◷</span>
+        <h3>The Feeling of Time</h3>
+        <p>A non-linear countdown that stretches at high speed and contracts when moving slowly. The clock is a system to read and play, with items and abilities that bend it further.</p>
+      </div>
+      <div class="pillar reveal" data-tilt>
+        <span class="idx">03</span><span class="glyph">♡</span>
+        <h3>Friends Join &amp; Leave</h3>
+        <p>Friends change how the game plays. Move too slowly and they take the next bus without you. Not everyone follows your path. But, as they say, you meet twice in life.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WORLD ===================== -->
+<section class="section" id="world">
+  <div class="container">
+    <div class="world-wrap">
+      <div class="world-map reveal-img" data-parallax-img>
+        <img src="assets/world%20map.png" alt="World map of the kingdom of Kran">
+        <figcaption class="map-cap">The kingdom of Kran: four schools, linked by gondola routes across three plains.</figcaption>
+      </div>
+      <div>
+        <p class="label reveal">The World</p>
+        <h2 class="reveal">After the Eclipse,<br>the world learned<br>to move on.</h2>
+        <div class="lore-list">
+          <div class="lore-item reveal">
+            <h4><i>I.</i> The Eclipse</h4>
+            <p>A cataclysm gave animals consciousness, erased the old civilization, and lifted the shattered earth into floating islands. Rune-inscribed monoliths appeared, humming with ambient magic.</p>
+          </div>
+          <div class="lore-item reveal">
+            <h4><i>II.</i> The Dissolution</h4>
+            <p>Solid matter is slowly dissolving back into free magical energy. Islands crumble at the edges. Skilled wizards convert that dissolution directly into momentum: a world coming apart is also a world becoming more powerful.</p>
+          </div>
+          <div class="lore-item reveal">
+            <h4><i>III.</i> The Schools</h4>
+            <p>Four grand schools, Kull, Brunn, Frun and Saus, train every inhabitant to traverse the unstable landscape. Students may never take the exam at their own school. Traversing the land is the test.</p>
+          </div>
+          <div class="lore-item reveal">
+            <h4><i>IV.</i> The Bond</h4>
+            <p>Magic also flows between creatures who understand one another. Kudo's abilities are borrowed from friends. When a friend leaves, a small critter vestige keeps a weaker version of the bond alive.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== KUDO ===================== -->
+<section class="section kudo-sec" id="kudo">
+  <div class="container">
+    <div class="kudo-grid">
+      <div>
+        <p class="label reveal">The Player Character</p>
+        <h2 class="reveal">Meet Kudo.</h2>
+        <p class="lead reveal" style="margin-top:24px">
+          A young wizard cat from Kull: big hat, sparkle accessory, purple triangular coat,
+          pool-noodle limbs and one visible fang. The silhouette reads fast and a little stretchy.
+          Kudo starts the journey confident but essentially alone. However, not for long. Many friends await.
+        </p>
+        <h3 class="kstat-header reveal">Kudo Stats</h3>
+        <div class="kudo-stats">
+          <div class="kstat reveal"><b>100 HP</b><span>Starting Health</span></div>
+          <div class="kstat reveal"><b>100 MP</b><span>Starting Mana</span></div>
+          <div class="kstat reveal"><b>9</b><span>Lives per Run</span></div>
+          <div class="kstat reveal"><b>500</b><span>Run Speed (units)</span></div>
+        </div>
+      </div>
+      <div class="kudo-art reveal">
+        <div class="kudo-ring"></div>
+        <img class="main" src="assets/kudo%20main.png" alt="Kudo character art" data-float>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MECHANICS ===================== -->
+<section class="section" id="mechanics">
+  <div class="container">
+    <p class="label reveal">Core Mechanics</p>
+    <h2 class="reveal">Don't take our word for it.<br>Try the systems.</h2>
+
+    <div class="widgets">
+      <!-- TIME DILATION WIDGET -->
+      <div class="widget reveal">
+        <h3>Speed bends time</h3>
+        <p class="hint">Drag the slider. Faster movement stretches the level's total time budget; the tick dial slows down.</p>
+        <div class="dial-row">
+          <div class="dial">
+            <svg width="170" height="170" viewBox="0 0 170 170">
+              <circle cx="85" cy="85" r="74" fill="none" stroke="var(--line)" stroke-width="10"/>
+              <circle id="dialArc" cx="85" cy="85" r="74" fill="none" stroke="var(--accent)" stroke-width="10"
+                      stroke-linecap="round" stroke-dasharray="465" stroke-dashoffset="0"/>
+            </svg>
+            <div class="tickno" id="tickNo">10</div>
+          </div>
+          <div class="dial-data">
+            <div class="big"><i id="speedVal">500</i> speed</div>
+            <small id="dilLine">Dilation ×1.0 · 100s total budget</small>
+            <div class="range-wrap">
+              <input type="range" id="speedRange" min="0" max="1000" step="5" value="500" autocomplete="off" data-hover>
+            </div>
+            <div class="range-caps"><span>0 · still</span><span>500 · default</span><span>2000 · max</span></div>
+          </div>
+        </div>
+        <div class="runner-stage" aria-hidden="true">
+          <div class="runner-track" id="runnerTrack"></div>
+          <div class="speedlines" id="speedLines"></div>
+          <img id="runnerKudo" src="assets/kudo%20main.png" alt="">
+        </div>
+      </div>
+
+      <!-- PARRY WIDGET -->
+      <div class="widget reveal">
+        <h3>Three ways to parry</h3>
+        <p class="hint">One button, three directions, a 5-frame window. The last frame is a perfect parry.</p>
+        <div class="parry-stage">
+          <img class="parry-kudo" id="parryKudo" src="assets/kudo%20main.png" alt="Kudo ready to parry">
+          <div class="parry-cone" id="parryCone"></div>
+          <div class="parry-fx" id="parryFx"></div>
+        </div>
+        <div class="parry-btns">
+          <button class="pbtn" data-dir="up" data-hover>▲ Upward</button>
+          <button class="pbtn" data-dir="fwd" data-hover>▶ Forward</button>
+          <button class="pbtn" data-dir="down" data-hover>▼ Downward</button>
+        </div>
+        <p class="parry-desc" id="parryDesc">Pick a direction to see what it does.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== JOURNEY INTRO ===================== -->
+<section class="section" id="journey" data-theme-trigger="dusk">
+  <div class="container journey-intro">
+    <p class="label reveal" style="justify-content:center">The Journey</p>
+    <h2 class="reveal">Three plains.<br>Three schools.<br>Three ways to move.</h2>
+    <p class="lead reveal">
+      Choosing a school path after each level also chooses your next movement challenge.
+      The route to every school passes through its plain, and each plain plays by its own physics.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== PLAIN: BRUNN ===================== -->
+<section class="plain" id="plain-brunn" data-theme-trigger="brunn">
+  <span class="plain-num">01</span>
+  <div class="plain-grid">
+    <div>
+      <p class="label reveal">Hohenberg · The Upper Plain</p>
+      <h2 class="reveal">Brunn climbs.<br><span class="accent">So will you.</span></h2>
+      <div class="plain-meta reveal">
+        <span class="tag" data-hover>Vertical platforming</span>
+        <span class="tag" data-hover>Alpine · clear sky</span>
+        <span class="tag" data-hover>Difficulty: medium</span>
+      </div>
+      <p class="desc reveal">
+        The Alpine islands of Hohenberg, rise above the kingdom. Wooden scaffolding and light fabrics adapt to the high winds. Right angles
+        dominate, so precision matters. Wall bounces, upward parries and high jumps carry you through
+        towers and opposing-wall climbs. Missing a platform is punishing, and gravity works against you.
+      </p>
+      <div class="school-line reveal">
+        <div class="school-roster">
+          <img src="assets/lule%20rabbit%20full.png" alt="Lule the rabbit">
+          <img src="assets/henry%20goose%20full.png" alt="Henry the goose">
+          <img src="assets/deusolbert%20kiwi%20full.png" alt="St. Deusolbert the kiwi">
+          <img src="assets/brimi%20mouse%20full.png" alt="Brimi the mouse">
+          <figure class="school-teacher" style="--school:#6fb3ff">
+            <figcaption class="role">Examiner<b>Bartholomäus</b></figcaption>
+            <div class="avatar"><img src="assets/bartholoomaeus%20dodo.png" alt="Bartholomäus, examiner of Brunn"></div>
+          </figure>
+        </div>
+        <p><b>School of Brunn.</b> Endurance and vertical agility. Home of the royal family Antritz and the most prestigious school in the kingdom, despite its current state.</p>
+      </div>
+    </div>
+    <div class="plain-art reveal-img" data-parallax-img>
+      <img src="assets/level%20concept%20upper%20lane.png" alt="Upper plain level concept">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PLAIN: FRUN ===================== -->
+<section class="plain" id="plain-frun" data-theme-trigger="frun">
+  <span class="plain-num">02</span>
+  <div class="plain-grid">
+    <div class="plain-art reveal-img" data-parallax-img>
+      <img src="assets/level%20concept%20middle%20lane.png" alt="Middle plain level concept">
+    </div>
+    <div>
+      <p class="label reveal">Wellenfeld · The Middle Plain</p>
+      <h2 class="reveal">Frun flows.<br><span class="accent">Keep moving.</span></h2>
+      <div class="plain-meta reveal">
+        <span class="tag" data-hover>Horizontal momentum</span>
+        <span class="tag" data-hover>Full sun</span>
+        <span class="tag" data-hover>Difficulty: easiest</span>
+      </div>
+      <p class="desc reveal">
+        The grassy field of Wellenfeld, strechts across islands of rolling hills. Mounds, trees and tall grass sway gently in the breeze.
+        Shallow angles allow Kudo to preserve momentum, creating a rhythm of traversing gaps:
+        Some cleared with a simple jump, others demand speed, dashing or a perfectly timed parry.
+        Always cheerful and bright, never dark.
+      </p>
+      <div class="school-line reveal">
+        <div class="school-roster">
+          <img src="assets/scheri%20crab%20full.png" alt="Scheri the crab">
+          <img src="assets/flimzahn%20fox%20full.png" alt="Flimzahn the fox">
+          <img src="assets/sonelle%20deer%20full.png" alt="Sonelle the deer">
+          <figure class="school-teacher" style="--school:#8fd398">
+            <figcaption class="role">Examiner<b>Onondaga</b></figcaption>
+            <div class="avatar"><img src="assets/onondaga%20moose.png" alt="Onondaga, examiner of Frun"></div>
+          </figure>
+        </div>
+        <p><b>School of Frun.</b> Speed and horizontal momentum, the most widely practiced tradition in the kingdom. Frun trains generalists.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PLAIN: SAUS ===================== -->
+<section class="plain" id="plain-saus" data-theme-trigger="saus">
+  <span class="plain-num">03</span>
+  <div class="plain-grid">
+    <div>
+      <p class="label reveal">Tropffall · The Lower Plain</p>
+      <h2 class="reveal">Saus falls.<br><span class="accent">Fall better.</span></h2>
+      <div class="plain-meta reveal">
+        <span class="tag" data-hover>Controlled falling</span>
+        <span class="tag" data-hover>Night · bioluminescent</span>
+        <span class="tag" data-hover>Difficulty: hardest</span>
+      </div>
+      <p class="desc reveal">
+        Tropffall is the most dissolved terrain in the kingdom: glowing mushrooms, alien ferns, tear-shaped
+        platforms with narrow tops and wide bellies. Descend through long drops, manage fall speed,
+        and dive along a teardrop's curve to convert a deadly fall into pure horizontal speed.
+        Beautiful and eerie.
+      </p>
+      <div class="school-line reveal">
+        <div class="school-roster">
+          <img src="assets/wani%20crocodile%20full.png" alt="Wani Seegrau the crocodile">
+          <img src="assets/tumillo%20armadillo%20full.png" alt="Tummillo the armadillo">
+          <img src="assets/john%20goat%20full.png" alt="John the goat">
+          <figure class="school-teacher" style="--school:#ff7a6e">
+            <figcaption class="role">Examiner<b>Quenendroth</b></figcaption>
+            <div class="avatar"><img src="assets/quenendroth%20octopus.png" alt="Quenendroth Oluminos, examiner of Saus"></div>
+          </figure>
+        </div>
+        <p><b>School of Saus.</b> Transformation. What others consider dangerous, Saus students consider a resource.</p>
+      </div>
+    </div>
+    <div class="plain-art reveal-img" data-parallax-img>
+      <img src="assets/level%20concept%20lower%20lane.png" alt="Lower plain level concept">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GONDOLA ===================== -->
+<section class="section gondola-sec" id="gondola" data-theme-trigger="dusk">
+  <div class="container">
+    <p class="label reveal">Between Levels</p>
+    <h2 class="reveal">Catch the gondola.<br>Catch your breath.</h2>
+    <p class="lead reveal" style="margin-top:22px">
+      Every leg of the journey is ridden on a gondola, part cable-car, part creature. Inside is the
+      social hub: browse the item shop, buy friendship items at the vending machine, and sit with your
+      party by the window while the broken world drifts past. Run out of time, though, and it leaves
+      without you.
+    </p>
+
+    <div class="gondola-feature-pair">
+      <figure class="gondola-feature reveal-img" data-parallax-img>
+        <img loading="lazy" src="assets/gondola%20inside%20cropped.png" alt="Inside the gondola: friends relaxing together on the bench">
+        <figcaption class="gondola-feature-cap">
+          <b>The main car</b>
+          <span>Friends · item shop · friendship vending · the conductor</span>
+        </figcaption>
+      </figure>
+      <figure class="gondola-feature reveal-img" data-parallax-img>
+        <img loading="lazy" src="assets/chill%20area.png" alt="The gondola's chill area: a friend watching the moonlit sky drift past">
+        <div class="chill-audio" id="chillAudioCtl">
+          <button class="chill-play" id="chillAudioBtn" type="button" data-hover aria-label="Play relaxing music">
+            <span class="chill-note" aria-hidden="true">♪</span>
+            <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="chill-audio-label">Play the calm</span>
+          </button>
+          <span class="chill-divider" aria-hidden="true"></span>
+          <svg class="chill-spk" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="range" class="chill-vol" id="chillVol" min="0" max="100" value="50" autocomplete="off" data-hover aria-label="Music volume">
+        </div>
+        <audio id="chillAudio" src="assets/peaceful%20time%202.mp3" loop preload="none"></audio>
+        <figcaption class="gondola-feature-cap">
+          <b>The chill area</b>
+          <span>Sit by the window and watch the broken world drift past</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="gondola-trio">
+      <figure class="gondola-card reveal">
+        <img loading="lazy" src="assets/gondola%20middle.png" alt="The gondola crossing the middle plain">
+        <figcaption><b>Wellenfeld</b><span>Middle plain · clear blue sky</span></figcaption>
+      </figure>
+      <figure class="gondola-card reveal">
+        <img loading="lazy" src="assets/gondola%20upper.png" alt="The gondola crossing the upper plain">
+        <figcaption><b>Hohenberg</b><span>Upper plain · alpine heights</span></figcaption>
+      </figure>
+      <figure class="gondola-card reveal">
+        <img loading="lazy" src="assets/gondola%20lower.png" alt="The gondola crossing the lower plain">
+        <figcaption><b>Tropffall</b><span>Lower plain · bioluminescent deep</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FRIENDS ===================== -->
+
+<section class="friends-sec" id="friends" data-theme-trigger="night">
+  <div class="friends-head">
+    <p class="label reveal">The Party</p>
+    <h2 class="reveal">Twelve friends.<br>Twelve ways to play.</h2>
+    <p class="lead reveal" style="margin-top:22px">
+      Each friend grants an ability with three tiers. Recruit them, lose them to their own journeys,
+      and find them again to unlock their strongest form. Scroll sideways, click a card for the full story.
+    </p>
+  </div>
+  <div class="friends-pin">
+    <div class="friends-track" id="friendsTrack"><!-- cards injected by JS --></div>
+  </div>
+</section>
+
+<!-- ===================== VESTIGE ===================== -->
+<section class="vestige section" id="vestige" data-theme-trigger="night">
+  <div class="container">
+    <blockquote class="reveal">
+      "When a friend leaves, they leave a little critter behind.<br>
+      <span class="dim">Weaker than the original. But still real.</span>"
+    </blockquote>
+    <div class="v-art">
+      <img class="reveal" src="assets/friends%20vestige.png" alt="Vestige critters">
+      <img class="reveal" src="assets/ruppel%20vestige.png" alt="Ruppel and his vestige">
+    </div>
+    <p class="note reveal">
+      Vestiges keep a Level 0 version of a departed friend's ability, take no party slot,
+      and crawl out of Kudo's coat when you stand still. Reunite with the friend while their
+      vestige is with you, and they return at Level 2, stronger than before. Departure is
+      memory, never loss.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== CHANCELLORS ===================== -->
+<section class="section" id="chancellors" data-theme-trigger="night">
+  <div class="container">
+    <p class="label reveal">The Examiners</p>
+    <h2 class="reveal">Four schools,<br>four Grand Wizard Chancellors.</h2>
+    <p class="lead reveal" style="margin-top:22px">
+      Each exam is a race. The chancellor conjures a copy of Kudo that runs the course at par time.
+      Beat it, earn the badge. Lose, and the run ends.
+    </p>
+    <div class="chan-grid">
+      <div class="chan reveal" data-hover style="--school:#b18cff">
+        <img src="assets/gernot%20elephant.png" alt="Gernot von Anßka, elephant">
+        <div class="veil"><b>Gernot von Anßka</b><i>Elephant · Kull</i><p>Elegant and thoughtful. Chancellor of Kudo's own modest home school.</p></div>
+      </div>
+      <div class="chan reveal" data-hover style="--school:#6fb3ff">
+        <img src="assets/bartholoomaeus%20dodo.png" alt="Bartholomäus, dodo">
+        <div class="veil"><b>Bartholomäus B. von Antritz und Hohenberg</b><i>Dodo · Brunn</i><p>A prince of his noble house, yet insecure because of his older brother Deusolbert.</p></div>
+      </div>
+      <div class="chan reveal" data-hover style="--school:#8fd398">
+        <img src="assets/onondaga%20moose.png" alt="Onondaga, moose">
+        <div class="veil"><b>Onondaga</b><i>Moose · Frun</i><p>Wise. Talks slowly. Uses few words.</p></div>
+      </div>
+      <div class="chan reveal" data-hover style="--school:#ff7a6e">
+        <img src="assets/quenendroth%20octopus.png" alt="Quenendroth Oluminos, octopus">
+        <div class="veil"><b>Quenendroth Oluminos</b><i>Octopus · Saus</i><p>Each tentacle has its own brain, used to solve Rubik's cubes. Probably the mightiest wizard in the kingdom.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROADMAP ===================== -->
+<section class="section roadmap" id="roadmap" data-theme-trigger="night">
+  <div class="container">
+    <p class="label reveal">Scope &amp; Milestones</p>
+    <h2 class="reveal">From solo demo<br>to playable prototype.</h2>
+    <div class="timeline">
+      <div class="tl-progress" id="tlProgress"></div>
+      <div class="tl-item reveal">
+        <span class="when">Aug 2026 · M1</span>
+        <h4>Movement prototype</h4>
+        <p>Running, jumping and falling on the full physics spec. All three parry directions. Hover and Dive at Level 1, playable in grey-box.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="when">Sep 2026 · M2</span>
+        <h4>Time system</h4>
+        <p>Tick system with speed-based dilation and the circular countdown display.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="when">Nov 2026 · M3</span>
+        <h4>Funding demo</h4>
+        <p>The tutorial playable start to finish, the recruit/vestige loop functional, and all three pillars demonstrated to funders.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="when">Feb 2027 · M4</span>
+        <h4>Design-complete</h4>
+        <p>All 9 level layouts, 12 friend backstories, bus dialogue, concept art and ~25 item effects specified before implementation begins.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="when">Jul 2027 · M7</span>
+        <h4>Grey-box demo, external playtesting</h4>
+        <p>A complete run from Level 0 through Boss 3, handed to external playtesters while there is still time to act on feedback.</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="when">Dec 2027 · M10</span>
+        <h4>Prototype complete</h4>
+        <p>Full asset integration, balance pass and polish. 12 friends, 9 levels, 3 exams, one session, ready to show.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer" id="end" data-theme-trigger="night">
+  <div class="footer-gondola" aria-hidden="true"><img src="assets/gondola%20transparent.png" alt=""></div>
+  <div>
+    <h2 class="reveal">The bus<br>is leaving.</h2>
+    <a class="cta reveal" role="button" tabindex="0" data-hover aria-disabled="true">
+      Read the full Game Design Document <span class="arrow">→</span>
+    </a>
+  </div>
+  <div class="footer-playground" id="footerPlay" aria-hidden="true"></div>
+  <div class="signup-grid">
+    <div class="signup-card reveal">
+      <h3>Stay on the route</h3>
+      <p>Development news and playtest invites in your inbox. Job openings get announced here first, too.</p>
+      <div class="eo-embed">
+        <script async src="https://eomail5.com/form/46c4ebac-67fc-11f1-8905-a79ea61a621a.js" data-form="46c4ebac-67fc-11f1-8905-a79ea61a621a"></script>
+      </div>
+    </div>
+    <div class="signup-card reveal">
+      <h3>Work on the game</h3>
+      <p>If we land funding, we'll start hiring.</p>
+      <div class="point-left">
+        <span class="point-arrow arrow-h" aria-hidden="true">←</span>
+        <span class="point-arrow arrow-v" aria-hidden="true">↑</span>
+        <span class="point-text">Hear it first through the newsletter</span>
+      </div>
+    </div>
+  </div>
+  <div class="studio reveal">
+    <span class="studio-by">A game by</span>
+    <div class="studio-lockup" data-hover>
+      <img class="studio-logo" src="assets/tobiludo%20logo%20transparent.png" alt="TobiLudo game studio">
+      <img class="studio-fish" src="assets/fisch.png" alt="" aria-hidden="true">
+    </div>
+  </div>
+  <div class="footer-meta">
+    <span>Time Moves On</span>
+    <span>·</span>
+    <span>A TobiLudo production</span>
+    <span>·</span>
+    <span>GDD Showcase</span>
+    <span>·</span>
+    <span class="godot-badge"><img class="godot-icon" src="assets/godot_icon_color.png" alt="Godot Engine"> Built in Godot 4.x</span>
+    <span>·</span>
+    <span>Windows PC</span>
+    <span>·</span>
+    <span>Prototype target: Dec 2027</span>
+  </div>
+</footer>
+
+<!-- ===================== FRIEND MODAL ===================== -->
+<div class="fmodal" id="fmodal" aria-hidden="true">
+  <div class="fmodal-backdrop" id="fmodalBackdrop"></div>
+  <div class="fmodal-panel" role="dialog" aria-modal="true" aria-labelledby="fmName">
+    <button class="fmodal-close" id="fmodalClose" data-hover aria-label="Close">✕</button>
+    <div class="fmodal-art"><img id="fmArt" src="" alt=""></div>
+    <div class="fmodal-info">
+      <span class="fm-chip" id="fmSchool"></span>
+      <h3 class="display" id="fmName"></h3>
+      <div class="animal" id="fmAnimal"></div>
+      <div class="fm-ability" id="fmAbility"></div>
+      <p class="fm-tagline" id="fmTagline"></p>
+      <div class="fm-levels" id="fmLevels"></div>
+      <p class="fm-persona" id="fmPersona"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+(function(){
+"use strict";
+var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var hasGsap = typeof gsap !== "undefined";
 
-  gtag('config', 'G-89SBZBCMS4');
+/* ---------- friend data ---------- */
+var SCHOOL_COLORS = { Kull:"#b18cff", Brunn:"#6fb3ff", Frun:"#8fd398", Saus:"#ff7a6e" };
+var FRIENDS = [
+  {name:"Üwe", animal:"Owl", school:"Kull", ability:"Hover", persona:"Scholarly and wise, but sometimes forgetful.", img:"assets/uewe%20owl.png",
+   tag:"Hold to bend your fall: rise up, hang steady, or feather a drop.",
+   tiers:["Half the lift, and it costs more mana.","5 mana/frame: +50 lift, or kill your fall speed.","Cheaper at 2 mana/frame, and re-enters instantly."]},
+  {name:"Ruppel", animal:"Red Panda", school:"Kull", ability:"Dive", persona:"Careful and shy. Underestimates himself.", img:"assets/ruppel%20red%20panda.png",
+   tag:"Slam downward on purpose, then stick the landing.",
+   tiers:["Only a 5% fall-damage cut.","Dive past the cap; a parry cuts fall damage up to 75%.","Up to 90% off. Slides turn the fall into pure speed."]},
+  {name:"Lule", animal:"Rabbit", school:"Brunn", ability:"Double Jump", persona:"Has a hard time sitting still. Forgetful.", img:"assets/lule%20rabbit.png",
+   tag:"A second jump in mid-air, as long as you're still rising.",
+   tiers:["20 mana, and a shorter hang.","10 mana: a full second jump at the apex.","A third jump unlocks. Stack them skyward."]},
+  {name:"Henry", animal:"Goose", school:"Brunn", ability:"In-Air Mana Regen", persona:"Likes to stay in line and follow others.", img:"assets/henry%20goose.png",
+   tag:"Stay airborne, stay topped up on mana.",
+   tiers:["A trickle: +1 mana per tick.","+10 mana per tick while off the ground.","Plus every ability costs 50% less mana."]},
+  {name:"St. Deusolbert", animal:"Kiwi", school:"Brunn", ability:"Speed Buildup", persona:"Noble and commanding. Boss energy.", img:"assets/deusolbert%20kiwi.png",
+   tag:"Refuse to parry and watch your speed climb. One parry resets it.",
+   tiers:["+1 speed per quiet tick.","+5 run & jump speed every tick without a parry.","+10 per tick, but the clock ticks twice as fast."]},
+  {name:"Brimi", animal:"Mouse", school:"Brunn", ability:"Gold → Mana", persona:"Has the largest hat in the kingdom and is very proud of it.", img:"assets/brimi%20mouse.png",
+   tag:"Your coin purse doubles as a mana tank.",
+   tiers:["+0.1 max mana per coin carried.","+0.5 max mana per coin carried.","At empty mana, spells are paid straight from gold."]},
+  {name:"Scheri", animal:"Crab", school:"Frun", ability:"Mana Boost", persona:"Pinches you when they get too excited.", img:"assets/scheri%20crab.png",
+   tag:"Burn mana to run harder and shrug off hard landings.",
+   tiers:["Pricey: 4 mana per HP saved.","Run 600 / jump 900; spend mana to cancel fall damage.","Run 750 / jump 1200; just 1 mana per HP saved."]},
+  {name:"Flimzahn", animal:"Fox", school:"Frun", ability:"Gold Bonus per Tick", persona:"Inquisitive, easygoing.", img:"assets/flimzahn%20fox.png",
+   tag:"Hoover up coins in one tick for an exploding bonus.",
+   tiers:["A gentler curve (1.35^x).","Bonus gold = 1.5^x coins grabbed that tick.","1.75^x. Ten coins in a tick pays out 269."]},
+  {name:"Sonelle", animal:"Deer", school:"Frun", ability:"Perfect Parry Boost", persona:"Graceful and slender, with high expectations.", img:"assets/sonelle%20deer.png",
+   tag:"Nail a perfect parry, fling yourself even faster.",
+   tiers:["A slim ×1.01 bonus.","An extra ×1.1 on top of every perfect parry.","×2.0, but every parry must be frame-perfect."]},
+  {name:"Wani Seegrau", animal:"Crocodile", school:"Saus", ability:"Dash", persona:"Hard to tell what he's thinking. Mostly just happy to be around.", img:"assets/wani%20crocodile.png",
+   tag:"A single-frame burst of speed, on demand.",
+   tiers:["50 mana, and no vertical control.","30 mana: +750 in the way you're facing.","Aim it any direction, even straight down."]},
+  {name:"Tummillo", animal:"Armadillo", school:"Saus", ability:"Momentum Shift", persona:"Open-minded and flexible.", img:"assets/tumillo%20armadillo.png",
+   tag:"Pour your speed from one axis into the other.",
+   tiers:["Locked. Can't be used.","Turn horizontal speed into a launch up or down.","Also fling falls sideways, for a little HP."]},
+  {name:"John", animal:"Goat", school:"Saus", ability:"Time Freeze", persona:"Shy and reclusive. Talks about higher dimensions.", img:"assets/john%20goat.png",
+   tag:"Stop the clock. Spend mana, buy time.",
+   tiers:["Steep: 100 mana per second.","Freeze the timer for 50 mana per second.","Dirt cheap at 20 mana per second."]}
+];
+
+var track = document.getElementById("friendsTrack");
+if (track){
+  FRIENDS.forEach(function(f){
+    var card = document.createElement("div");
+    card.className = "fcard";
+    card.setAttribute("data-hover","");
+    card.setAttribute("role","button");
+    card.setAttribute("tabindex","0");
+    card.style.setProperty("--school", SCHOOL_COLORS[f.school]);
+    card.innerHTML =
+      '<span class="school-dot" style="background:'+SCHOOL_COLORS[f.school]+'">'+f.school+'</span>' +
+      '<img loading="lazy" decoding="async" src="'+f.img+'" alt="'+f.name+' the '+f.animal+'">' +
+      '<h4>'+f.name+'</h4>' +
+      '<div class="animal">'+f.animal+'</div>' +
+      '<div class="ability">'+f.ability+'</div>' +
+      '<p class="persona">'+f.persona+'</p>';
+    card.addEventListener("click", function(){ openFriendModal(f); });
+    card.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();openFriendModal(f);} });
+    track.appendChild(card);
+  });
+  var outro = document.createElement("div");
+  outro.className = "fcard outro";
+  outro.innerHTML = '<h4>30–50 friends<br>in the full game.</h4><p>The prototype ships with these twelve. Every one of them has a home school, a voice, and a bus they would rather take.</p>';
+  track.appendChild(outro);
+}
+
+/* ---------- friend modal ---------- */
+var fmodal=document.getElementById("fmodal");
+var fmodalPanel=fmodal?fmodal.querySelector(".fmodal-panel"):null;
+function openFriendModal(f){
+  if(!fmodal)return;
+  fmodal.style.setProperty("--fmcolor",SCHOOL_COLORS[f.school]);
+  fmodal.querySelector(".fmodal-art").style.setProperty("--fmcolor",SCHOOL_COLORS[f.school]);
+  var fmArt=document.getElementById("fmArt");
+  fmArt.onerror=function(){ this.onerror=null; this.src=f.img; };  // fall back to portrait
+  fmArt.src=f.full || f.img.replace(/\.png$/,"%20full.png");
+  fmArt.alt=f.name+" full character art";
+  document.getElementById("fmSchool").textContent="School of "+f.school;
+  document.getElementById("fmSchool").style.background=SCHOOL_COLORS[f.school];
+  document.getElementById("fmName").textContent=f.name;
+  document.getElementById("fmAnimal").textContent=f.animal;
+  document.getElementById("fmAbility").textContent=f.ability;
+  document.getElementById("fmTagline").textContent=f.tag;
+  var LEVEL_LABELS=[["LVL 0","Vestige"],["LVL 1","Recruited"],["LVL 2","Reunited"]];
+  document.getElementById("fmLevels").innerHTML = f.tiers.map(function(txt,i){
+    return '<div class="fm-level" data-open="'+(i===1?'true':'false')+'">'+
+             '<button class="fm-level-head" type="button" data-hover>'+
+               '<span class="fm-level-tag"><b>'+LEVEL_LABELS[i][0]+'</b> · '+LEVEL_LABELS[i][1]+'</span>'+
+               '<span class="fm-level-plus">+</span>'+
+             '</button>'+
+             '<div class="fm-level-body"><div class="fm-level-inner"><p>'+txt+'</p></div></div>'+
+           '</div>';
+  }).join("");
+  document.getElementById("fmPersona").textContent="“"+f.persona+"”";
+  fmodal.classList.add("open");
+  fmodal.setAttribute("aria-hidden","false");
+  if (typeof lenis!=="undefined" && lenis) lenis.stop();
+  if (hasGsap && !reduceMotion && fmodalPanel){
+    gsap.fromTo(fmodal.querySelector(".fmodal-backdrop"),{opacity:0},{opacity:1,duration:.35,ease:"power2.out"});
+    gsap.fromTo(fmodalPanel,{opacity:0,y:46,scale:.94},{opacity:1,y:0,scale:1,duration:.55,ease:"power3.out"});
+    gsap.fromTo("#fmArt",{x:-26,opacity:0},{x:0,opacity:1,duration:.6,delay:.12,ease:"power3.out"});
+  }
+}
+function closeFriendModal(){
+  if(!fmodal||!fmodal.classList.contains("open"))return;
+  var done=function(){
+    fmodal.classList.remove("open");
+    fmodal.setAttribute("aria-hidden","true");
+    if (typeof lenis!=="undefined" && lenis) lenis.start();
+  };
+  if (hasGsap && !reduceMotion && fmodalPanel){
+    gsap.to(fmodalPanel,{opacity:0,y:30,scale:.96,duration:.3,ease:"power2.in"});
+    gsap.to(fmodal.querySelector(".fmodal-backdrop"),{opacity:0,duration:.3,onComplete:done});
+  } else done();
+}
+if (fmodal){
+  document.getElementById("fmodalClose").addEventListener("click",closeFriendModal);
+  document.getElementById("fmodalBackdrop").addEventListener("click",closeFriendModal);
+  window.addEventListener("keydown",function(e){ if(e.key==="Escape") closeFriendModal(); });
+  document.getElementById("fmLevels").addEventListener("click",function(e){
+    var head=e.target.closest(".fm-level-head"); if(!head)return;
+    var lvl=head.parentElement;
+    var wasOpen = lvl.getAttribute("data-open")==="true";
+    this.querySelectorAll(".fm-level").forEach(function(el){ el.setAttribute("data-open","false"); }); // only one open at a time
+    if(!wasOpen) lvl.setAttribute("data-open","true");
+  });
+}
+
+/* ---------- signup forms (non-functional stubs) ---------- */
+document.querySelectorAll(".signup-form").forEach(function(form){
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var input=form.querySelector("input");
+    if (input && input.value.indexOf("@")<0){
+      if (hasGsap && !reduceMotion) gsap.fromTo(input,{x:-7},{x:0,duration:.4,ease:"elastic.out(1,.3)"});
+      input.focus();
+      return;
+    }
+    var ok=form.parentElement.querySelector(".signup-ok");
+    form.hidden=true;
+    if (ok){
+      ok.hidden=false;
+      if (hasGsap && !reduceMotion) gsap.fromTo(ok,{opacity:0,y:8},{opacity:1,y:0,duration:.5,ease:"power2.out"});
+    }
+  });
+});
+
+/* ---------- footer character playground (bounce + energetic flips) ---------- */
+var play=document.getElementById("footerPlay");
+if (play){
+  var PLAY_ARTS = FRIENDS.map(function(f){ return f.img.replace(/\.png$/,"%20full.png"); }).concat([
+    "assets/bartholoomaeus%20dodo%20full.png",
+    "assets/onondaga%20moose%20full.png",
+    "assets/quenendroth%20octopus%20full.png",
+    "assets/gernot%20elephant%20full.png"
+  ]);
+  var pchars = PLAY_ARTS.map(function(src){
+    var im=document.createElement("img"); im.src=src; im.alt=""; im.loading="lazy";
+    play.appendChild(im);
+    return {el:im,x:0,vx:0,w:0,phase:Math.random()*6.28,rate:0,amp:0,facing:1,target:1,pop:0};
+  });
+  var pW=0,pInited=false,pPlaying=false,pLast=0;
+  function pInit(){
+    pW=play.clientWidth||1000;
+    pchars.forEach(function(c){
+      c.w=c.el.offsetWidth||90;
+      c.x=Math.random()*Math.max(1,pW-c.w);
+      var sp=55+Math.random()*120;                 // px/s, varied energy
+      c.vx=(Math.random()<0.5?-1:1)*sp;
+      c.facing=c.target=(c.vx>0?1:-1);
+      c.rate=4.5+Math.random()*4.5;                 // bounce frequency
+      c.amp=13+Math.random()*22;                    // bounce height
+    });
+    pInited=true;
+  }
+  function pFrame(now){
+    if(!pPlaying) return;
+    var dt=Math.min(0.05,(now-pLast)/1000); pLast=now;
+    pW=play.clientWidth||pW;
+    for(var i=0;i<pchars.length;i++){
+      var c=pchars[i];
+      if(!c.w) c.w=c.el.offsetWidth||90;
+      var maxX=Math.max(1,pW-c.w);
+      c.x+=c.vx*dt;
+      if(c.x<=0){ c.x=0; c.vx=Math.abs(c.vx); c.target=1; c.pop=1; c.phase=0; }        // hit left -> flip
+      else if(c.x>=maxX){ c.x=maxX; c.vx=-Math.abs(c.vx); c.target=-1; c.pop=1; c.phase=0; } // hit right -> flip
+      c.phase+=dt*c.rate;
+      var y=Math.abs(Math.sin(c.phase))*c.amp;       // hop
+      c.facing+=(c.target-c.facing)*Math.min(1,dt*16); // quick eased flip
+      c.pop=Math.max(0,c.pop-dt*4);                  // flip squash/stretch, decays fast
+      var sx=c.facing*(1+c.pop*0.2), sy=1-c.pop*0.14;
+      c.el.style.transform="translate("+c.x.toFixed(1)+"px,"+(-y).toFixed(1)+"px) scale("+sx.toFixed(3)+","+sy.toFixed(3)+")";
+    }
+    requestAnimationFrame(pFrame);
+  }
+  if (reduceMotion){
+    pInit();
+    pchars.forEach(function(c){ c.el.style.transform="translate("+c.x.toFixed(1)+"px,0) scaleX("+c.facing+")"; });
+  } else if ("IntersectionObserver" in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ if(!pInited) pInit(); if(!pPlaying){ pPlaying=true; pLast=performance.now(); requestAnimationFrame(pFrame); } }
+        else { pPlaying=false; }
+      });
+    },{threshold:0.01}).observe(play);
+  } else {
+    pInit(); pPlaying=true; pLast=performance.now(); requestAnimationFrame(pFrame);
+  }
+}
+
+/* ---------- chill area music ---------- */
+var chillBtn=document.getElementById("chillAudioBtn"), chillAudio=document.getElementById("chillAudio"), chillVol=document.getElementById("chillVol");
+if (chillBtn && chillAudio){
+  var chillLabel=chillBtn.querySelector(".chill-audio-label");
+  var targetVol=0.5, fadeRAF=null;       // 50% default volume
+  chillAudio.volume=0;
+  function chillFade(to,dur,after){
+    if(fadeRAF) cancelAnimationFrame(fadeRAF);
+    var from=chillAudio.volume, t0=performance.now();
+    (function step(now){
+      var k=Math.min(1,(now-t0)/dur);
+      chillAudio.volume=Math.max(0,Math.min(1, from+(to-from)*k));
+      if(k<1) fadeRAF=requestAnimationFrame(step);
+      else { fadeRAF=null; if(after) after(); }
+    })(performance.now());
+  }
+  chillBtn.addEventListener("click",function(){
+    if (chillAudio.paused){
+      chillAudio.volume=0;
+      chillAudio.play().then(function(){
+        chillBtn.classList.add("is-playing");
+        if(chillLabel) chillLabel.textContent="Now playing";
+        chillBtn.setAttribute("aria-label","Pause relaxing music");
+        chillFade(targetVol, 1000);      // fade in
+      }).catch(function(){});
+    } else {
+      chillBtn.classList.remove("is-playing");
+      if(chillLabel) chillLabel.textContent="Play the calm";
+      chillBtn.setAttribute("aria-label","Play relaxing music");
+      chillFade(0, 800, function(){ chillAudio.pause(); });  // fade out, then stop
+    }
+  });
+  if (chillVol){
+    chillVol.addEventListener("input",function(){
+      targetVol=(+chillVol.value)/100;
+      chillVol.style.setProperty("--fill", chillVol.value+"%");
+      if(!chillAudio.paused){ if(fadeRAF){cancelAnimationFrame(fadeRAF);fadeRAF=null;} chillAudio.volume=targetVol; }
+    });
+  }
+}
+
+/* ---------- custom cursor ---------- */
+var cursor = document.querySelector(".cursor");
+var dot = document.querySelector(".cursor-dot");
+if (cursor && dot && window.matchMedia("(pointer:fine)").matches){
+  var cx=-100, cy=-100, tx=-100, ty=-100;
+  window.addEventListener("mousemove", function(e){
+    tx=e.clientX; ty=e.clientY;
+    dot.style.transform = "translate("+tx+"px,"+ty+"px)";
+  });
+  (function loop(){
+    cx += (tx-cx)*0.16; cy += (ty-cy)*0.16;
+    cursor.style.transform = "translate("+cx+"px,"+cy+"px)";
+    requestAnimationFrame(loop);
+  })();
+  document.addEventListener("mouseover", function(e){
+    if (e.target.closest("[data-hover],a,button,input")){ cursor.classList.add("is-hover"); dot.classList.add("is-hover"); }
+  });
+  document.addEventListener("mouseout", function(e){
+    if (e.target.closest("[data-hover],a,button,input")){ cursor.classList.remove("is-hover"); dot.classList.remove("is-hover"); }
+  });
+}
+
+/* ---------- stars ---------- */
+var stars = document.querySelector(".stars");
+if (stars){
+  for (var i=0;i<70;i++){
+    var s=document.createElement("i");
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    s.style.animationDelay=(Math.random()*3)+"s";
+    s.style.opacity=Math.random()*0.7+0.1;
+    stars.appendChild(s);
+  }
+}
+
+/* ---------- time dilation widget ---------- */
+var PTS=[[0,0.5],[500,1],[1000,2],[2000,4],[4000,8]];
+function dilation(speed){
+  for (var i=0;i<PTS.length-1;i++){
+    var a=PTS[i], b=PTS[i+1];
+    if (speed>=a[0] && speed<=b[0]){
+      var t=(speed-a[0])/(b[0]-a[0]);
+      return a[1]+(b[1]-a[1])*t;
+    }
+  }
+  return 8;
+}
+var range=document.getElementById("speedRange");
+var speedVal=document.getElementById("speedVal");
+var dilLine=document.getElementById("dilLine");
+var dialArc=document.getElementById("dialArc");
+var tickNo=document.getElementById("tickNo");
+var CIRC=465;
+var dialState={progress:0, ticks:10, speed:500};
+var runnerKudo=document.getElementById("runnerKudo");
+var speedLines=document.getElementById("speedLines");
+var runnerTrack=document.getElementById("runnerTrack");
+var blurPrim=document.getElementById("motionBlurPrim");
+var TRACK_TILE=100, trackStageW=0, trackOffset=0, bobPhase=0;  // track + bob run on the rAF loop, not CSS animations
+function measureTrack(){ if(runnerTrack){ var w=runnerTrack.clientWidth; if(w) trackStageW=w; } }
+measureTrack();
+window.addEventListener("resize",measureTrack);
+// slider position (0..1000, 500 = default centre) -> speed: 0..500 maps to 0..500, 500..1000 maps to 500..4000
+function posToSpeed(pos){ return pos<=500 ? pos : 500+(pos-500)*3; } // pos 1000 -> 2000 max
+function updateRunner(v){
+  var hi=Math.max(0,Math.min(1,(v-500)/1500)); // 0 at/below 500 default, 1 at 2000 max
+  if (blurPrim) blurPrim.setAttribute("stdDeviation",(hi*14).toFixed(2)+",0"); // blur only above 500
+  // Kudo's lean + bounce are driven continuously in the rAF loop (so adjusting speed never resets them)
+  if (speedLines){
+    speedLines.style.opacity = hi<=0?0:Math.min(.5,.08+hi*.8);
+    speedLines.style.setProperty("--lineDur",Math.max(.18,1.2-hi*1.0)+"s");
+  }
+}
+function updateRangeUI(){
+  var pos=+range.value;
+  var v=posToSpeed(pos);
+  dialState.speed=v;
+  var d=dilation(v);
+  var total=Math.round(100*d);
+  speedVal.textContent=Math.round(v);
+  dilLine.textContent="Dilation ×"+(Math.round(d*10)/10)+" · "+total+"s total budget · "+(total/10).toFixed(1)+"s per tick";
+  range.style.setProperty("--fill",(pos/1000*100)+"%");
+  updateRunner(v);
+}
+if (range){
+  range.value=500;   // always start at the 500 default, ignore any browser-restored value
+  updateRangeUI();
+  range.addEventListener("input", updateRangeUI);
+  var last=performance.now();
+  (function dialLoop(now){
+    var dt=(now-last)/1000; last=now;
+    var d=dilation(dialState.speed);
+    var tickDur=(100*d)/10;            // seconds per tick
+    var simRate=2.2;                   // simulation runs faster than real life, for show
+    dialState.progress += (dt*simRate)/tickDur;
+    if (dialState.progress>=1){
+      dialState.progress=0;
+      dialState.ticks = dialState.ticks<=1 ? 10 : dialState.ticks-1;
+      tickNo.textContent=dialState.ticks;
+      if (hasGsap && !reduceMotion) gsap.fromTo(tickNo,{scale:1.35},{scale:1,duration:.4,ease:"back.out(3)"});
+    }
+    dialArc.style.strokeDashoffset = String(CIRC*dialState.progress);
+    // scroll the ground track: a feature crosses the full stage width in 500/speed seconds.
+    // accumulate position so changing speed never resets it (only the per-frame step changes).
+    if (runnerTrack && dialState.speed>0 && trackStageW>0){
+      var vel = trackStageW * dialState.speed / 500;        // px per second
+      trackOffset = (trackOffset - vel*dt) % TRACK_TILE;     // bounded; pattern repeats every tile
+      runnerTrack.style.backgroundPositionX = trackOffset.toFixed(2)+"px";
+    }
+    // Kudo: lean scales above 500, bounce is more pronounced and faster with speed, none at standstill
+    if (runnerKudo){
+      var rs=dialState.speed, rhi=Math.max(0,Math.min(1,(rs-500)/1500)), by=0;
+      if (rs>0){
+        bobPhase += dt*Math.PI*(1.2 + (rs/2000)*3);          // continuous phase: speed only changes the rate
+        by = Math.abs(Math.sin(bobPhase)) * (8 + (rs/2000)*20);
+      } else { bobPhase=0; }
+      runnerKudo.style.transform="translateY("+(-by).toFixed(1)+"px) rotate("+(-rhi*13).toFixed(2)+"deg) skewX("+(-rhi*7).toFixed(2)+"deg)";
+    }
+    requestAnimationFrame(dialLoop);
+  })(last);
+}
+
+/* ---------- parry widget ---------- */
+var PARRY={
+  up:{desc:"Upward parry: launch instantly to +750 vertical speed. Perfect: +1500. Walls are excluded, so no infinite climbing.",
+      cone:{x:"-50%",y:"-160%"}, move:{y:-58}, fx:"+750 ↑"},
+  fwd:{desc:"Forward parry: reverse horizontal momentum and multiply it ×1.1. Perfect: ×1.2. Aim it ±45° with vertical input.",
+      cone:{x:"30%",y:"-50%"}, move:{x:64}, fx:"×1.1 →"},
+  down:{desc:"Downward parry: bounce up at +750 and keep ×1.1 of your horizontal speed. Falling? It also cuts fall damage by 25%.",
+      cone:{x:"-50%",y:"60%"}, move:{y:-40}, fx:"bounce!"}
+};
+var parryKudo=document.getElementById("parryKudo");
+var parryCone=document.getElementById("parryCone");
+var parryFx=document.getElementById("parryFx");
+var parryDesc=document.getElementById("parryDesc");
+document.querySelectorAll(".pbtn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var conf=PARRY[btn.dataset.dir];
+    if (!conf) return;
+    document.querySelectorAll(".pbtn").forEach(function(b){b.classList.remove("active")});
+    btn.classList.add("active");
+    parryDesc.textContent=conf.desc;
+    if (hasGsap && !reduceMotion){
+      gsap.killTweensOf([parryKudo,parryCone,parryFx]);
+      gsap.fromTo(parryCone,{xPercent:-50,yPercent:-50,x:0,y:0,opacity:0,scale:.4},
+        {opacity:1,scale:1,x:conf.cone.x,y:conf.cone.y,duration:.18,ease:"power2.out",
+         onComplete:function(){gsap.to(parryCone,{opacity:0,duration:.45})}});
+      var tl=gsap.timeline();
+      tl.to(parryKudo,{x:conf.move.x||0,y:conf.move.y||0,rotation:conf.move.x?8:(conf.move.y<0?-6:0),duration:.28,ease:"power3.out"})
+        .to(parryKudo,{x:0,y:0,rotation:0,duration:.6,ease:"elastic.out(1,.45)"});
+      gsap.fromTo(parryFx,{opacity:0,y:10,xPercent:-50},{opacity:1,y:-46,duration:.5,ease:"power2.out",
+        onStart:function(){parryFx.textContent=conf.fx},
+        onComplete:function(){gsap.to(parryFx,{opacity:0,duration:.3})}});
+    } else {
+      parryFx.textContent=conf.fx;
+    }
+  });
+});
+
+/* ---------- counters ---------- */
+function countUp(el){
+  var target=+el.dataset.count, start=null, dur=1400;
+  function step(ts){
+    if(!start)start=ts;
+    var p=Math.min((ts-start)/dur,1);
+    el.textContent=Math.round(target*(1-Math.pow(1-p,3)));
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---------- GSAP scroll work ---------- */
+if (hasGsap && !reduceMotion){
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* lenis smooth scroll */
+  if (typeof Lenis!=="undefined"){
+    var lenis=new Lenis({lerp:0.1,smoothWheel:true});
+    lenis.on("scroll",ScrollTrigger.update);
+    gsap.ticker.add(function(time){lenis.raf(time*1000)});
+    gsap.ticker.lagSmoothing(0);
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener("click",function(e){
+        var target=document.querySelector(a.getAttribute("href"));
+        if(target){e.preventDefault();lenis.scrollTo(target,{offset:0,duration:1.4});}
+      });
+    });
+  }
+
+  /* hero intro: scene layers + logo float in from the top, staggered */
+  var heroTl=gsap.timeline({delay:.1});
+  heroTl.fromTo(".hero-l-bg",{yPercent:-7,opacity:0},{yPercent:0,opacity:1,duration:1.5,ease:"power3.out"},0)
+        .fromTo(".hero-l-friends",{yPercent:-52,opacity:0},{yPercent:0,opacity:1,duration:1.6,ease:"power3.out"},0.18)
+        .fromTo(".hero-l-kudo",{yPercent:-80,opacity:0},{yPercent:0,opacity:1,duration:1.75,ease:"power3.out"},0.38)
+        .fromTo(".hero-logo",{yPercent:-135,opacity:0,scale:.92},{yPercent:0,opacity:1,scale:1,duration:1.5,ease:"power4.out"},0.62)
+        .to(".hero-kicker",{opacity:1,duration:.8,ease:"power2.out"},"-=.85")
+        .to(".hero-sub",{opacity:1,y:0,duration:.9,ease:"power2.out"},"-=.6")
+        .to(".scroll-cue",{opacity:1,duration:.8},"-=.45");
+
+  /* hero: gentle continuous float once settled */
+  gsap.to(".hero-l-friends",{y:-13,duration:3.4,ease:"sine.inOut",yoyo:true,repeat:-1,delay:1.7});
+  gsap.to(".hero-l-kudo",{y:-22,duration:2.8,ease:"sine.inOut",yoyo:true,repeat:-1,delay:1.9});
+  gsap.to(".hero-logo",{y:-11,duration:3.8,ease:"sine.inOut",yoyo:true,repeat:-1,delay:2.1});
+
+  /* hero parallax: whole scene moves together, stays aligned */
+  gsap.to(".hero-stage",{yPercent:14,scale:1.05,ease:"none",
+    scrollTrigger:{trigger:".hero",start:"top top",end:"bottom top",scrub:true}});
+  gsap.to(".hero-logo-wrap",{yPercent:-26,opacity:.15,ease:"none",
+    scrollTrigger:{trigger:".hero",start:"top top",end:"bottom 45%",scrub:true}});
+  gsap.to(".hero-inner",{yPercent:-14,opacity:.25,ease:"none",
+    scrollTrigger:{trigger:".hero",start:"top top",end:"bottom 30%",scrub:true}});
+
+  /* marquee scrub + drift */
+  gsap.to(".marquee-track",{xPercent:-50,ease:"none",duration:28,repeat:-1});
+
+  /* generic reveals */
+  gsap.utils.toArray(".reveal").forEach(function(el){
+    gsap.to(el,{opacity:1,y:0,duration:1.05,ease:"power3.out",
+      scrollTrigger:{trigger:el,start:"top 86%"}});
+  });
+  gsap.utils.toArray(".reveal-img").forEach(function(el){
+    gsap.to(el,{clipPath:"inset(0% 0 0 0)",duration:1.3,ease:"power4.inOut",
+      scrollTrigger:{trigger:el,start:"top 82%"}});
+  });
+
+  /* parallax inside image frames */
+  gsap.utils.toArray("[data-parallax-img] img").forEach(function(img){
+    gsap.fromTo(img,{yPercent:-7},{yPercent:7,ease:"none",
+      scrollTrigger:{trigger:img.parentElement,start:"top bottom",end:"bottom top",scrub:true}});
+  });
+
+  /* floaty elements */
+  gsap.utils.toArray("[data-float]").forEach(function(el,i){
+    gsap.to(el,{y:i%2? -16:-22,rotation:i%2?2:-2,duration:2.6+i*.4,yoyo:true,repeat:-1,ease:"sine.inOut"});
+  });
+
+  /* stat counters */
+  gsap.utils.toArray("[data-count]").forEach(function(el){
+    ScrollTrigger.create({trigger:el,start:"top 88%",once:true,onEnter:function(){countUp(el)}});
+  });
+
+  /* theme journey */
+  document.querySelectorAll("[data-theme-trigger]").forEach(function(sec){
+    var theme=sec.dataset.themeTrigger;
+    ScrollTrigger.create({
+      trigger:sec,start:"top 55%",end:"bottom 55%",
+      onEnter:function(){document.body.dataset.theme=theme},
+      onEnterBack:function(){document.body.dataset.theme=theme}
+    });
+  });
+  ScrollTrigger.create({
+    trigger:"#pitch",start:"top 60%",end:"bottom 40%",
+    onEnter:function(){document.body.dataset.theme="dawn"},
+    onEnterBack:function(){document.body.dataset.theme="dawn"}
+  });
+
+  /* horizontal friends scroll */
+  if (track){
+    var pin=document.querySelector(".friends-pin");
+    var getScroll=function(){return track.scrollWidth - window.innerWidth;};
+    gsap.to(track,{x:function(){return -getScroll();},ease:"none",force3D:true,
+      scrollTrigger:{
+        trigger:pin,start:"top top",pin:true,scrub:0.6,
+        end:function(){return "+="+getScroll();},
+        anticipatePin:1,
+        fastScrollEnd:true,
+        invalidateOnRefresh:true
+      }});
+  }
+
+  /* timeline progress line */
+  var tlp=document.getElementById("tlProgress");
+  if (tlp){
+    gsap.to(tlp,{height:"100%",ease:"none",
+      scrollTrigger:{trigger:".timeline",start:"top 70%",end:"bottom 60%",scrub:true}});
+  }
+
+  /* pillar tilt */
+  document.querySelectorAll("[data-tilt]").forEach(function(card){
+    card.addEventListener("mousemove",function(e){
+      var r=card.getBoundingClientRect();
+      var px=(e.clientX-r.left)/r.width - .5;
+      var py=(e.clientY-r.top)/r.height - .5;
+      gsap.to(card,{rotationY:px*9,rotationX:-py*9,transformPerspective:700,duration:.5,ease:"power2.out"});
+    });
+    card.addEventListener("mouseleave",function(){
+      gsap.to(card,{rotationY:0,rotationX:0,duration:.8,ease:"elastic.out(1,.5)"});
+    });
+  });
+
+  /* nav hide on scroll down */
+  var lastY=0;
+  ScrollTrigger.create({
+    start:0,end:"max",
+    onUpdate:function(self){
+      var y=self.scroll();
+      var nav=document.querySelector(".nav");
+      if (y>140 && y>lastY) nav.classList.add("is-hidden");
+      else nav.classList.remove("is-hidden");
+      lastY=y;
+    }
+  });
+} else {
+  /* no-gsap / reduced motion fallback: show everything */
+  document.querySelectorAll(".reveal,.reveal-img,.hero-kicker,.hero-sub,.scroll-cue,.hero-layer,.hero-logo").forEach(function(el){
+    el.style.opacity=1;el.style.transform="none";el.style.clipPath="none";
+  });
+}
+})();
 </script>
-		<style>
-			.p1 {
-			  font-family: "Courier New", Lucida, monospace;
-			}
-		</style>
-		<title>Tobias Geib - Portfolio</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-		<link rel="icon" type="image/x-icon" href="/images/sign4.png">
-	</head>
-	<body class="is-preload">
-
-		<!-- Header -->
-			<header id="header">
-				<h1>Tobias Geib M.Sc.</h1>
-				<nav>
-					<ul>
-						<li><a href="#intro"><strong>Portfolio</strong></a></li>
-						<li><a href="/about.html">About Me</a></li>
-						<li><a href="/projects.html">Projects</a></li>
-					</ul>
-				</nav>
-			</header>
-
-		<!-- Intro -->
-			<section id="intro" class="main style1 dark fullscreen">
-				<div class="content">
-					<header>
-						<h2>Tobias Geib</h2>
-					</header>
-					<p>I'm Tobi, I am a passionate <strong>artist</strong> and a professional <strong>software-engineer</strong> from Germany.<br />
-					I like to combine my creativity with my technical knowledge. <br /></p>
-
-					        <!-- Logos Container -->
-							<div class="logo-container" id="logoContainer">
-								<!-- Replace the following with your array of logo images -->
-								<img class="logo" src="images/cubase.png" alt="Logo 2">
-								<img class="logo" src="images/fusion.png" alt="Logo 2">
-								<img class="logo" src="images/gslogo.png" alt="Logo 2">
-								<img class="logo" src="images/photoshop logo.png" alt="Logo 2">
-								<img class="logo" src="images/unity.png" alt="Logo 2">
-								<img class="logo" src="images/csharp.png" alt="Logo 2">
-								<img class="logo" src="images/unreal logo.png" alt="Logo 1">
-								<img class="logo" src="images/cpplogo.png" alt="Logo 2">
-								<img class="logo" src="images/icon.svg" alt="Logo 2">
-								<!-- Add more logos as needed -->
-							</div>
-
-							<script>
-								document.addEventListener('DOMContentLoaded', function() {
-									var logoContainer = document.getElementById('logoContainer');
-									var logos = logoContainer.getElementsByClassName('logo');
-									var maxWidth = Math.max(...Array.from(logos).map(logo => logo.clientWidth));					
-									Array.from(logos).forEach(function(logo) {
-										var widthDiff = (maxWidth - logo.clientWidth) * .5 + 10;
-										widthDiff = Math.min(20, widthDiff);
-										logo.style.marginRight = widthDiff + 'px';
-										logo.style.marginLeft = widthDiff + 'px';
-									});
-								});
-							</script>
-					<footer>
-						<a href="#one" class="button style2 down">More</a>
-					</footer>
-				</div>
-			</section>
-
-
-			
-
-		<!-- Three -->
-		<section id="three" class="main style2 right dark fullscreen">
-			<div class="content box style2">
-				<header>
-					<h2>Illustrations</h2>
-				</header>
-			</div>
-			<a href="#illustrations" class="button style2 down anchored">Next</a>
-		</section>
-		<section id="illustrations" class="main style3 primary">
-			<div class="content">
-
-				<div class ="gallery-50">
-					<article>
-						<a href="images/pokemon_prof.png" class="image fit"><img class="image" img src="images/pokemon_prof.png"/></a>
-					</article>
-					<article >
-						<a href="images/ikzuchi hime 10000V.png" class="image fit"><img class="image" img src="images/ikzuchi hime 10000V.png"title=" "/></a>
-					</article>
-				</div>
-
-				<div class="gallery-25">
-					<article >
-						<a href="images/cat_ear.png" class="image fit"><img class="image" img src="images/cat_ear.png"title=" "/></a>
-					</article>
-					<article >
-						<a href="images/blue_creature.png" class="image fit"><img class="image" img src="images/blue_creature.png"title=" "/></a>
-					</article>
-					<article >
-						<a href="images/ominous_catgirl.png" class="image fit"><img class="image" img src="images/ominous_catgirl.png"title=" "/></a>
-					</article>
-					<article >
-						<a href="images/friends.png" class="image fit"><img class="image" img src="images/friends.png"title=" "/></a>
-					</article>
-				</div>
-
-
-				<div class="gallery-50">
-					<article >
-						<a href="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" class="image fit"><img class="image" img src="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png"title=" "/></a>
-					</article>
-					<article >
-						<a href="images/broom witch.jpg" class="image fit"><img class="image" img src="images/broom witch.jpg"title=" "/></a>
-					</article>
-				</div>
-
-				<!-- Gallery  -->
-					<div class="gallery-25">
-						<article >
-							<a href="images/lost_plakat3.png" class="image fit"><img class="image" img src="images/lost_plakat3.png"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/bunnygirl.png" class="image fit"><img class="image" img src="images/bunnygirl.png"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/crown.png" class="image fit"><img class="image" img src="images/crown.png"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/poster_A3_revized.png" class="image fit"><img class="image" img src="images/poster_A3_revized.png"title=" "/></a>
-						</article>
-					</div>
-					
-				<div class ="gallery-50">
-					<article>
-						<a href="images/on the watch v2.png" class="image fit"><img class="image" img src="images/on the watch v2.png"/></a>
-					</article>
-					<article >
-						<a href="images/Illustration167.jpg" class="image fit"><img class="image" img src="images/Illustration167.jpg"title=" "/></a>
-					</article>
-				</div>
-
-
-			</div>
-		</section>
-
-		<!-- One -->
-			<section id="one" class="main style2 right dark fullscreen">
-				<div class="content box style2">
-					<header>
-						<h2>Concept Art</h2>
-					</header>
-						</div>
-				<a href="#conceptart" class="button style2 down anchored">Next</a>
-			</section>
-
-			<section id="conceptart" class="main style3 primary">
-				<div class="content">
-
-					<!-- Gallery  -->
-						<div class="gallery-50">
-							<article >
-								<a href="images/betrayal.jpg" class="image fit"><img class="image" img src="images/betrayal.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/expedition_alt.jpg" class="image fit"><img class="image" img src="images/expedition_alt.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/capital sketch.jpg" class="image fit"><img class="image" img src="images/capital sketch.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/roaming_giant_spider.png" class="image fit"><img class="image" img src="images/roaming_giant_spider.png"title=" "/></a>
-							</article>
-							<!--
-							<article >
-								<a href="images/Illustration141.png" class="image fit"><img class="image" img src="images/Illustration141.png"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/ship.jpg" class="image fit"><img class="image" img src="images/ship.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/Project (20240106015028).png" class="image fit"><img class="image" img src="images/Project (20240106015028).png"title=" "/></a>
-							</article>
-							
-							<article >
-								<a href="images/canyon.jpg" class="image fit"><img class="image" img src="images/canyon.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/steampunk-gun 2.jpg" class="image fit"><img class="image" img src="images/steampunk-gun 2.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/loft-girigiri crop.jpg" class="image fit"><img class="image" img src="images/loft-girigiri crop.jpg"title=" "/></a>
-							</article>
--->
-						</div>
-
-						
-						<div class="gallery-50">
-							<article >
-								<a href="images/sentry_3 render.jpg" class="image fit"><img class="image" img src="images/sentry_3 render.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/hands.png" class="image fit"><img class="image" img src="images/hands.png"title=" "/></a>
-							</article>
-						</div>
-				</div>
-			</section>
-
-
-		
-		<!-- Two -->
-		<section id="two" class="main style2 left dark fullscreen">
-			<div class="content box style2">
-				<header>
-					<h2>Character Design</h2>
-				</header>
-			</div>
-			<a href="#characters" class="button style2 down anchored">Next</a>
-		</section>
-		<section id="characters" class="main style3 primary">
-			<div class="content">
-
-				<div class="gallery-h">
-
-					<article >
-						<a href="images/princess polish.jpg" class="image fit"><img class="image" img src="images/princess polish.jpg"title=" "/></a>
-					</article>
-					
-				</div>
-				<!-- Gallery  -->
-					<div class="gallery-25">
-						<article >
-							<a href="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" class="image fit"><img class="image" img src="images/sdfgsdfgsdhsdhdsfhgsdfg2.png"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/photo_2023-12-09_15-07-13 (2).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13 (2).jpg"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/photo_2023-12-10_02-48-10.png" class="image fit"><img class="image" img src="images/photo_2023-12-10_02-48-10.png"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/Project (20240105075405).png" class="image fit"><img class="image" img src="images/Project (20240105075405).png"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/tired warrior.jpg" class="image fit"><img class="image" img src="images/tired warrior.jpg"title=" "/></a>
-						</article>
-						<article >
-							<a href="images/smoking girl.jpg" class="image fit"><img class="image" img src="images/smoking girl.jpg"title=" "/></a>
-						</article>
-						
-						<article >
-							<a href="images/chunibyo.jpg" class="image fit"><img class="image" img src="images/chunibyo.jpg"title=" "/></a>
-						</article>
-						
-						<article >
-							<a href="images/coffee break.jpg" class="image fit"><img class="image" img src="images/coffee break.jpg"title=" "/></a>
-						</article>
-						
-						<article >
-							<a href="images/IMG_20231210_123440_691.png" class="image fit"><img class="image" img src="images/IMG_20231210_123440_691.png"title=" "/></a>
-						</article>
-						
-						<article >
-							<a href="images/photo_2023-12-15_22-28-25.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25.jpg"title=" "/></a>
-						</article>
-						
-					</div>
-					
-				<div class="gallery-h">
-					<article >
-						<a href="images/elf ninja.png" class="image fit"><img class="image" img src="images/elf ninja.png"title=" "/></a>
-					</article>
-				</div>
-			</div>
-		</section>
-
-<!-- 
-			<section id="three" class="main style2 left dark fullscreen">
-				<div class="content box style1">
-					<header>
-						<h2>What I do</h2>
-					</header>
-					<p>I have recently </p>
-				</div>
-				<a href="#work" class="button style2 down anchored">Next</a>
-			</section> -->
-
-		<!-- Work --><!-- 
-			<section id="work" class="main style3 primary">
-				<div class="content">
-					<header>
-						<h2>My Portfolio</h2><br>
-					</header>
-
-					<!-- Gallery  --><!-- 
-						<div class="gallery-25">
-							<article >
-								<a href="images/betrayal.jpg" class="image fit"><img class="image" img src="images/betrayal.jpg"title=" "/></a>
-							</article>
-							<article >
-								<a href="images/expedition_alt.jpg" class="image fit"><img class="image" img src="images/expedition_alt.jpg" title="The people seek to reach the ship on top the snowy mountain" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/princess polish.jpg" class="image fit"><img class="image" img src="images/princess polish.jpg" title="Character progression: From young princess to Queen." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/broom witch.jpg" class="image fit"><img class="image" img src="images/broom witch.jpg" title="A little witch on her broomstick." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/elven cyberpunk ninja 2.jpg" class="image fit"><img class="image" img src="images/elven cyberpunk ninja 2.jpg" title="Character progresion: Elven Swordfighter to Cyberpunk Ninja." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/steampunk-gun 2.jpg" class="image fit"><img class="image" img src="images/steampunk-gun 2.jpg" title="Concept for a full-auto steampunk-gun. A bullet belt is fed into a gatling gun type firing mechanism in the shape of a revolver." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/canyon scaled.png" class="image fit"><img class="image" img src="images/canyon scaled.png" title="Landscape view with sleeping monk." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/loft-girigiri crop.jpg" class="image fit"><img class="image" img src="images/loft-girigiri crop.jpg" title="A cyberpunk loft in isometric view." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/Illustration167.jpg" class="image fit"><img class="image" img src="images/Illustration167.jpg" title="Tree-house apartments inspired by daisugi trees. An ukiyo-e inspired design of a fanatasy tree." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/sentry_3 render.jpg" class="image fit"><img class="image" img src="images/sentry_3 render.jpg" title="A design for a sentry-type robot. First designed in Gravity Sketch using VR along with 2 variations and then rendered in Photoshop." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/smoking girl.jpg" class="image fit"><img class="image" img src="images/smoking girl.jpg" title="A cool girl in a pose with a cigarette." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/coffee break.jpg" class="image fit"><img class="image" img src="images/coffee break.jpg" title="Character posing with a cup of coffee." alt="" /></a>
-							</article>	
-							<article >
-								<a href="images/tired warrior.jpg" class="image fit"><img class="image" img src="images/tired warrior.jpg" title="A sketch of an old warrior type character." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/chunibyo.jpg" class="image fit"><img class="image" img src="images/chunibyo.jpg" title="A eccentric girl striking a pose posing" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/scary girl.jpg" class="image fit"><img class="image" img src="images/scary girl.jpg" title="Creepy character render." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/molten creature.jpg" class="image fit"><img class="image" img src="images/molten creature.jpg" title="Creepy creature with a molten face." alt="" /></a>
-							</article>
-							
-							<!--<article >
-								<a href="images/ship.jpg" class="image fit"><img class="image" img src="images/ship.jpg" title="A concept of combining an old fishing-boat and futuristic airship elements." alt="" /></a>
-							</article>--><!-- 
-							<article >
-								<a href="images/photo_2021-11-17_21-39-06.jpg" class="image fit"><img class="image" img src="images/photo_2021-11-17_21-39-06.jpg" title="8 different Alien heads." alt="" /></a>
-							</article>
-							<article >
-								<a href="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" class="image fit"><img class="image" img src="images/Bild_Geib_850x600mm_Keilrahmen_v01-20191115_Ansicht_small.png" title="Ink on Paper" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/The first battle of Vogler.jpg" class="image fit"><img class="image" img src="images/The first battle of Vogler.jpg" title="Compilation of Scenes from a DnD campaign" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/death of fildo.png" class="image fit"><img class="image" img src="images/death of fildo.png" title="Scene from personal DnD campaign" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" class="image fit"><img class="image" img src="images/sdfgsdfgsdhsdhdsfhgsdfg2.png" title="Character inspired by Y2K aesthetic" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/flowers.png" class="image fit"><img class="image" img src="images/flowers.png" title="Girl with flowers" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/filinorNew3_2023-11-05-13-28-14.png" class="image fit"><img class="image" img src="images/filinorNew3_2023-11-05-13-28-14.png" title="3D sculpt of a figurine" alt="" /></a>
-							</article>
-							
-							<article >
-								<a href="images/IMG_20231210_123440_691.png" class="image fit"><img class="image" img src="images/IMG_20231210_123440_691.png" title="Mech sprining into action" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/poster_A3_revized.png" class="image fit"><img class="image" img src="images/poster_A3_revized.png" title="Poster commission for local role-playing event" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/IMG_20231210_123438_487.png" class="image fit"><img class="image" img src="images/IMG_20231210_123438_487.png" title="Character concept" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/IMG_20231210_123438_897.png" class="image fit"><img class="image" img src="images/IMG_20231210_123438_897.png" title="Angelic figure escaping an explosion" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-15_22-28-25.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25.jpg" title="Character having a smoke" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-15_22-28-25 (2).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (2).jpg" title="Woman with a fancy hat" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-15_22-28-25 (3).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (3).jpg" title="Girl with katana" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-15_22-28-25 (4).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-15_22-28-25 (4).jpg" title="Creepy girl" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-09_15-08-33.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-08-33.jpg" title="Girl with swords and burning hat" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-09_15-07-13.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13.jpg" title="Futuristic speeder concept" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-09_15-07-13 (2).jpg" class="image fit"><img class="image" img src="images/photo_2023-12-09_15-07-13 (2).jpg" title="Shadowrun Orc concept" alt="" /></a>
-							</article>
-							<article >
-								<a href="images/photo_2023-12-10_02-48-10.jpg" class="image fit"><img class="image" img src="images/photo_2023-12-10_02-48-10.jpg" title="Cyberpunk guy with katana" alt="" /></a>
-							</article>
-							
-						</div>
-
-				</div>
-			</section>
-		<!-- Two --><!-- 
-		<section id="two" class="main style2 left dark fullscreen">
-			<div class="content box style2">
-				<header>
-					<h2>What I do</h2>
-				</header>
-				<p>I specialize in using VR as a creative tool for my concept art. <br> I build 3D environments and pose characters in VR using Gravity Sketch, which are then rendered and painted over for the finished piece.</p>
-			</div>
-			<a href="#three" class="button style2 down anchored">Next</a>
-		</section>
-
-
-		<!-- One --><!-- 
-		<section id="three" class="main style2 right dark fullscreen">
-			<div class="content box style2">
-				<header>
-					<h2>Projects</h2>
-				</header>
-				<p>I have worked as an artist for Capslabs on a canceled game-project, for which I created this concept art and 2D assests, like this little guy's running animation.<br>
-					<img src="images/eve_pixel1.gif" alt="" />
-				</p>
-			</div>
-			<a href="#work" class="button style2 down anchored">Next</a>
-		</section>
-					<!-- Contact --><!-- 
-		<section id="hobby" class="main style3 secondary">
-			<div class="content">
-				<header>
-					<h2>Personal Interests</h2><br>
-				</header>
-			</div>
-			</section>
-
-			<section id="music" class="main style2 right dark fullscreen">
-				<div class="content box style2">
-					<header>
-						<h2>Music</h2>
-					</header>
-					<p>In my free time I write and record my own music.
-						I casually play guitar and I like writing for orchestral instruments aswell.
-						I use Cubase as my DAW and Native Instruments for various VSTs.<br><br>
-						For a VR Rhythm game I developed in Unity I wrote this song, which you can check out if you want.<br>
-						<br>
-						<!-- <img src="images/beatspeeder square.png", width="200px"><br> --><!-- 
-						<audio controls>
-							<source src="images/space-race_final_v2.mp3" type="audio/mpeg">
-						  Your browser does not support the audio element.
-						  </audio>
-					</p>
-				</div>
-				<a href="#two" class="button style2 down anchored">Next</a>
-			</section>
-
-			<section id="japan" class="main style2 left dark fullscreen">
-				<div class="content box style2">
-					<header>
-						<h2>Japan</h2>
-					</header>
-					<p>So far, I have lived in Japan for roughly 2 years in total. 
-						In 2010 I visited the Asuwa High School (福井県立 足羽高等学校) in Fukui as an exchange student.
-						Then, in 2018-2019 I went to the Keio University (慶應義塾大学) in Tokyo, where I took their Japanese Language Program. 
-						<br><br>
-						During my time I there, I had so many great experiences and in the future I want to further improve my language skills.
-<!-- 					
-						<br>
-						<br>
-						<img src="images/japan comp new.png", width="400px"><br> --><!-- 
-					</p>
-				</div>
-				<a href="#two" class="button style2 down anchored">Next</a>
-			</section>
-
-<!-- 			
-		<section id="hobby" class="main style3 secondary">
-			<div class="content">
-				<header>
-					<h2>Music</h2><br>
-				</header>
-				<p>In my free time I write and record my own music.
-					I casually play guitar and I like writing for orchestral instruments aswell.
-					I use Cubase as my DAW and Native Instruments for various VSTs.<br><br>
-					For a VR Rhythm game I developed I wrote this song, which you can check out if you want.<br>
-					<br>
-					<img src="images/beatspeeder square.png", width="200px"><br>
-					<audio controls>
-						<source src="images/space-race_final_v2.mp3" type="audio/mpeg">
-					  Your browser does not support the audio element.
-					  </audio>
-				</p>
-			</div>
-			</section>
-		<section id="hobby" class="main style3 secondary">
-			<div class="content box style2">
-				<header>
-					<h2>Japanese</h2><br>
-				<p>So far, I have lived in Japan for roughly 2 years in total. 
-					In 2010-2011 I visited the Asuwa High School (福井県立 足羽高等学校) in Fukui as an exchange student.
-					In 2018-2019 I went to the Keio University (慶應義塾大学) in Tokyo, where I took their japanese language program. 
-					
-					<br>
-					<br>
-					<img src="images/japan comp new.png", width="400px"><br>
-
-				</p>
-			</div>
-		</section> -->
-
-				<!-- About me -->
-				<style>
-					.links {
-						text-align: center;
-						margin-bottom: 20px; /* Adjust margin as needed */
-						
-				background: #f5f6f7;
-					}
-				</style>
-				
-				<!-- About me -->
-				<div class="links">
-					<p>Here are some further links to check out:</p>
-				</div>
-				<section id="contact" class="main style3 secondary">
-
-			<div class="content">
-				<header>
-					<h2><nav>
-						<ul>
-							<li><a href="/about.html">About Me</a></li>	
-						</ul>
-						</nav>
-					</h2>
-					</header>
-			</div>
-
-			
-			<div class="content">
-				<header>
-					<h2><nav>
-						<ul>
-							<li><a href="/projects.html">Projects</a></li>	
-						</ul>
-						</nav>
-					</h2>
-					</header>
-			</div>
-		</section>
-
-		<!-- Footer -->
-			<footer id="footer">
-
-				
-
-				<!-- Menu -->
-					<ul class="menu">
-						<li>&copy; Tobias Geib</li>
-					</ul>
-
-			</footer>
-
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.poptrox.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-
-	</body>
+</body>
 </html>

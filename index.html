@@ -381,7 +381,11 @@ input[type=range]::-moz-range-thumb{
 /* ------- friends ------- */
 .friends-sec{position:relative;overflow:hidden;padding:16vh 0 0}
 .friends-head{padding:0 6vw;max-width:1280px;margin:0 auto 6vh}
-.friends-pin{height:100svh;display:flex;align-items:center;overflow:hidden}
+.friends-pin{
+  display:flex;align-items:center;padding:1vh 0 3vh;
+  overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+}
+.friends-pin.is-pinned{height:100svh;padding:0;overflow:hidden}
 .friends-track{display:flex;gap:26px;padding:0 6vw;will-change:transform;transform:translateZ(0);backface-visibility:hidden}
 .fcard{
   flex:none;width:min(330px,78vw);
@@ -802,7 +806,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
   <div class="scroll-cue"><span>Scroll</span><span class="wheel"></span></div>
 </header>
 
-<!-- ===================== MARQUEE ===================== -->
+<!-- ===================== MARQUEE ===================== 
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
     <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
@@ -810,10 +814,10 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
     <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
     <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
   </div>
-</div>
+</div>-->
 
 <!-- ===================== PITCH ===================== -->
-<section class="section" id="pitch">
+<section class="section" id="pitch" data-theme-trigger="dawn">
   <div class="container">
     <div class="pitch-grid">
       <div>
@@ -930,7 +934,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 </section>
 
 <!-- ===================== MECHANICS ===================== -->
-<section class="section" id="mechanics">
+<section class="section" id="mechanics" data-theme-trigger="dawn">
   <div class="container">
     <p class="label reveal">Core Mechanics</p>
     <h2 class="reveal">Don't take our word for it.<br>Try the systems.</h2>
@@ -1774,6 +1778,14 @@ function countUp(el){
 }
 
 /* ---------- GSAP scroll work ---------- */
+/* theme journey: color changes via IntersectionObserver, works without GSAP or with reduced motion */
+if ("IntersectionObserver" in window){
+  var themeIO=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting && e.target.dataset.themeTrigger){ document.body.dataset.theme=e.target.dataset.themeTrigger; } });
+  },{rootMargin:"-50% 0px -50% 0px",threshold:0});
+  document.querySelectorAll("[data-theme-trigger]").forEach(function(s){ themeIO.observe(s); });
+}
+
 if (hasGsap && !reduceMotion){
   gsap.registerPlugin(ScrollTrigger);
 
@@ -1843,24 +1855,12 @@ if (hasGsap && !reduceMotion){
     ScrollTrigger.create({trigger:el,start:"top 88%",once:true,onEnter:function(){countUp(el)}});
   });
 
-  /* theme journey */
-  document.querySelectorAll("[data-theme-trigger]").forEach(function(sec){
-    var theme=sec.dataset.themeTrigger;
-    ScrollTrigger.create({
-      trigger:sec,start:"top 55%",end:"bottom 55%",
-      onEnter:function(){document.body.dataset.theme=theme},
-      onEnterBack:function(){document.body.dataset.theme=theme}
-    });
-  });
-  ScrollTrigger.create({
-    trigger:"#pitch",start:"top 60%",end:"bottom 40%",
-    onEnter:function(){document.body.dataset.theme="dawn"},
-    onEnterBack:function(){document.body.dataset.theme="dawn"}
-  });
+  /* theme journey is handled by the IntersectionObserver above (runs regardless of GSAP) */
 
-  /* horizontal friends scroll */
-  if (track){
+  /* horizontal friends scroll: pinned scrub on wider screens; mobile/touch keeps native swipe (CSS) */
+  if (track && window.matchMedia("(min-width: 821px)").matches){
     var pin=document.querySelector(".friends-pin");
+    pin.classList.add("is-pinned");
     var getScroll=function(){return track.scrollWidth - window.innerWidth;};
     gsap.to(track,{x:function(){return -getScroll();},ease:"none",force3D:true,
       scrollTrigger:{
@@ -1905,10 +1905,11 @@ if (hasGsap && !reduceMotion){
     }
   });
 } else {
-  /* no-gsap / reduced motion fallback: show everything */
+  /* no-gsap / reduced motion fallback: show everything statically */
   document.querySelectorAll(".reveal,.reveal-img,.hero-kicker,.hero-sub,.scroll-cue,.hero-layer,.hero-logo").forEach(function(el){
     el.style.opacity=1;el.style.transform="none";el.style.clipPath="none";
   });
+  document.querySelectorAll("[data-count]").forEach(function(el){ el.textContent=el.dataset.count; });
 }
 })();
 </script>

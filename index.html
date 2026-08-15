@@ -37,9 +37,7 @@ body{
   color:var(--ink);
   overflow-x:hidden;
   transition:background-color 1s cubic-bezier(.4,0,.2,1),color 1s cubic-bezier(.4,0,.2,1);
-  cursor:none;
 }
-@media (hover:none),(pointer:coarse){ body{cursor:auto} .cursor,.cursor-dot{display:none} }
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 ::selection{background:var(--accent);color:#fff}
@@ -52,31 +50,6 @@ body[data-theme="frun"]{--bg:#e9f3da;--ink:#1d2a16;--line:rgba(29,42,22,.15);--c
 body[data-theme="saus"]{--bg:#0b0c1e;--ink:#d9f6ff;--line:rgba(217,246,255,.14);--card:#141631;--accent:#5fe0e0}
 body[data-theme="night"]{--bg:#0a0c14;--ink:#efeaf6;--line:rgba(239,234,246,.13);--card:#131628;--accent:#7b5cff}
 
-/* ------- cursor ------- */
-.cursor,.cursor-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;will-change:transform}
-.cursor-star{
-  position:absolute;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;overflow:visible;
-  fill:#ffd23f;opacity:.6;
-  filter:drop-shadow(0 0 6px rgba(255,205,70,.55));
-  animation:twinkle 2.1s ease-in-out infinite;
-  transition:width .35s,height .35s,margin .35s,opacity .35s,fill .35s,filter .35s,stroke-width .3s;
-}
-.cursor.is-hover .cursor-star{
-  width:56px;height:56px;margin:-28px 0 0 -28px;opacity:.9;
-  fill:#fff;filter:drop-shadow(0 0 11px rgba(255,255,255,.75));
-}
-.cursor-star.sm{
-  width:14px;height:14px;margin:-7px 0 0 -7px;fill:#ffd23f;opacity:1;
-  stroke:#0b0b0b;stroke-width:14;stroke-linejoin:round;paint-order:stroke;
-  filter:drop-shadow(0 0 6px rgba(255,205,70,.75));
-  animation:twinkle 2.7s ease-in-out infinite reverse;
-}
-.cursor-dot.is-hover .cursor-star.sm{stroke-width:0}
-@keyframes twinkle{
-  0%,100%{transform:rotate(-10deg) scale(.85)}
-  50%{transform:rotate(10deg) scale(1.08)}
-}
-
 /* ------- nav ------- */
 .nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
@@ -85,7 +58,7 @@ body[data-theme="night"]{--bg:#0a0c14;--ink:#efeaf6;--line:rgba(239,234,246,.13)
   transition:transform .5s cubic-bezier(.6,0,.2,1);
 }
 .nav.is-hidden{transform:translateY(-110%)}
-.nav-logo img{height:54px;width:auto;filter:drop-shadow(0 3px 12px rgba(60,80,160,.3));transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.nav-logo img{height:70px;width:auto;filter:drop-shadow(0 3px 12px rgba(60,80,160,.3));transition:transform .4s cubic-bezier(.2,.8,.2,1)}
 .nav-logo:hover img{transform:scale(1.06)}
 .nav-links{display:flex;gap:26px;align-items:center;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
 .nav-links a{position:relative;padding:4px 0;opacity:.75;transition:opacity .3s}
@@ -125,6 +98,8 @@ h2{font-size:clamp(30px,4.6vw,64px);font-weight:800;line-height:1.06;letter-spac
   object-fit:cover;object-position:center 30%;opacity:0;will-change:transform,opacity;
 }
 .hero-l-friends,.hero-l-kudo{pointer-events:none}
+/* frame the friends art 50px lower inside its box, so the float animation is unaffected */
+.hero-l-friends{object-position:center calc(30% + 50px)}
 .hero-fade{
   position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(180deg,rgba(244,236,221,0) 34%,rgba(244,236,221,.5) 74%,var(--bg) 99%);
@@ -151,14 +126,24 @@ h2{font-size:clamp(30px,4.6vw,64px);font-weight:800;line-height:1.06;letter-spac
 }
 .hero-inner{position:relative;z-index:2}
 .hero-kicker{
-  font-size:clamp(15px,2.1vw,20px);letter-spacing:.3em;text-transform:uppercase;font-weight:1000;
-  margin-bottom:2.2vh;opacity:0;
+  display:inline-block;   /* block would stretch the gradient box past the text and hide the light end */
+  font-size:clamp(48px,2.7vw,64px);letter-spacing:.4em;text-transform:uppercase;font-weight:1000;
+  margin-bottom:2.2vh;opacity:0;color:#1a1a1e;
+  background:linear-gradient(90deg,#08080a 0%,#33333a 55%,#6b6c73 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 .hero-sub{
-  display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end;justify-content:space-between;
-  margin-top:4vh;opacity:0;
+  display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;justify-content:space-between;
+  margin-top:2vh;opacity:0;
+  max-width:var(--kicker-w,46ch);   /* set in JS to the kicker's visual width, so both end on the same edge */
 }
-.hero-sub p{font-size:clamp(15px,1.4vw,20px);line-height:1.55;max-width:46ch;font-weight:500}
+.hero-sub p{font-size:clamp(18px,1.7vw,25px);line-height:1.55;max-width:100%;font-weight:500}
+.hero-sub b{
+  color:var(--accent);font-weight:800;
+  -webkit-text-stroke:.08em #08080a;   /* em, so the outline keeps its weight as the copy scales */
+  paint-order:stroke fill;   /* stroke behind the fill, so the glyphs keep their weight */
+}
 .hero-tags{display:flex;gap:10px;flex-wrap:wrap}
 .tag{
   border:1.5px solid var(--ink);border-radius:999px;padding:8px 16px;font-size:12px;
@@ -335,7 +320,7 @@ input[type=range]::-moz-range-thumb{
 .pbtn{
   flex:1;min-width:110px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
   font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;border-radius:999px;padding:13px 10px;cursor:none;
+  text-transform:uppercase;border-radius:999px;padding:13px 10px;cursor:pointer;
   transition:background .25s,color .25s,border-color 1s;
 }
 .pbtn:hover,.pbtn.active{background:var(--ink);color:var(--bg)}
@@ -347,6 +332,20 @@ input[type=range]::-moz-range-thumb{
 .plain{
   min-height:100svh;display:flex;align-items:center;padding:14vh 6vw;position:relative;overflow:hidden;
 }
+/* the plain's own concept art, washed into the background behind the content.
+   A mask fades the top and bottom to nothing, so the section's theme colour carries the edges
+   and neighbouring sections meet on flat colour. */
+.plain-bg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  opacity:.18;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 28%,#000 72%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0,#000 28%,#000 72%,transparent 100%);
+}
+.plain-bg img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;filter:saturate(.8)}
+/* Saus runs on a near-black theme, where the same opacity lifts the whole background
+   several shades. Less of it there keeps the dark colour intact. */
+#plain-saus .plain-bg{opacity:.1}
+.plain-grid,.plain-num{position:relative;z-index:1}
 .plain-grid{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;max-width:1280px;margin:0 auto;width:100%}
 @media(max-width:900px){.plain-grid{grid-template-columns:1fr}}
 .plain-num{
@@ -379,16 +378,23 @@ input[type=range]::-moz-range-thumb{
 @media(max-width:760px){.school-roster > img{height:74px}.school-teacher .avatar{width:108px;height:108px}}
 
 /* ------- friends ------- */
-.friends-sec{position:relative;overflow:hidden;padding:16vh 0 0}
+.friends-sec{position:relative;overflow:hidden;padding:16vh 0 12vh}
 .friends-head{padding:0 6vw;max-width:1280px;margin:0 auto 6vh}
-.friends-pin{
-  display:flex;align-items:center;padding:1vh 0 3vh;
-  overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+.friends-grid{
+  --cols:6;--fgap:18px;            /* two rows of six: Kull+Brunn, then Frun+Saus */
+  display:flex;flex-direction:column;gap:var(--fgap);
+  padding:0 4vw;max-width:1720px;margin:0 auto;
 }
-.friends-pin.is-pinned{height:100svh;padding:0;overflow:hidden}
-.friends-track{display:flex;gap:26px;padding:0 6vw;will-change:transform;transform:translateZ(0);backface-visibility:hidden}
+.friends-row{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--fgap)}
+.friends-row > .fcard{
+  flex:0 0 calc((100% - (var(--cols) - 1) * var(--fgap)) / var(--cols));
+  min-width:0;                     /* portraits are wide; without this the cards refuse to shrink */
+}
+@media(max-width:1500px){.friends-grid{--cols:4}}
+@media(max-width:1100px){.friends-grid{--cols:3}}
+@media(max-width:820px){.friends-grid{--cols:2}}
+@media(max-width:560px){.friends-grid{--cols:1}}
 .fcard{
-  flex:none;width:min(330px,78vw);
   background:
     radial-gradient(118% 56% at 50% 15%, color-mix(in srgb,var(--school,#888) 32%,transparent), transparent 64%),
     var(--card);
@@ -404,7 +410,7 @@ input[type=range]::-moz-range-thumb{
   text-transform:uppercase;padding:5px 12px;border-radius:99px;color:#101010;
 }
 .fcard img{
-  height:210px;width:100%;object-fit:contain;margin:18px 0 8px;
+  height:clamp(140px,13vw,190px);width:100%;object-fit:contain;margin:16px 0 8px;
   transition:transform .45s cubic-bezier(.2,.8,.2,1);
 }
 .fcard:hover img{transform:scale(1.07) rotate(2deg)}
@@ -416,11 +422,13 @@ input[type=range]::-moz-range-thumb{
 }
 .fcard .persona{font-size:13.5px;line-height:1.55;opacity:.72;margin-top:8px;min-height:3.1em}
 .fcard.outro{
-  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;
-  background:transparent;border-style:dashed;
+  width:100%;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 40px;
+  background:transparent;border-style:dashed;padding:30px 34px;
 }
-.fcard.outro h4{font-size:24px;line-height:1.2}
-.fcard.outro p{font-size:14px;opacity:.7;line-height:1.6}
+.fcard.outro:hover{transform:none;box-shadow:none}
+.fcard.outro h4{font-size:clamp(20px,2.4vw,28px);line-height:1.2}
+.fcard.outro p{font-size:14px;opacity:.7;line-height:1.6;max-width:56ch}
 
 /* ------- vestige ------- */
 .vestige{min-height:90svh;display:flex;align-items:center;text-align:center;position:relative;overflow:hidden}
@@ -495,7 +503,18 @@ input[type=range]::-moz-range-thumb{
   margin-top:auto;padding-top:10vh;display:flex;gap:28px;flex-wrap:wrap;justify-content:center;align-items:center;
   font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;opacity:.45;
 }
-.footer > *:not(.footer-gondola){position:relative;z-index:1}
+.footer > *:not(.footer-gondola):not(.footer-bg){position:relative;z-index:1}
+.footer-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.footer-bg img{
+  width:100%;height:100%;object-fit:cover;object-position:50% 45%;
+  opacity:.9;filter:saturate(.9);
+}
+.footer-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(120% 80% at 50% 40%, rgba(10,12,20,.35), rgba(10,12,20,.86) 72%),
+    linear-gradient(to bottom, var(--bg), rgba(10,12,20,.15) 22%, rgba(10,12,20,.55) 70%, var(--bg));
+}
 .footer-gondola{position:absolute;left:0;right:0;top:5%;z-index:0;pointer-events:none}
 .footer-gondola img{
   position:absolute;left:0;top:0;width:clamp(180px,22vw,300px);height:auto;opacity:.92;
@@ -586,7 +605,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 .fm-level[data-open="true"]{border-color:color-mix(in srgb,var(--fmcolor,#888) 55%,var(--line));background:color-mix(in srgb,var(--fmcolor,#888) 12%,transparent)}
 .fm-level-head{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:12px 16px;background:none;border:0;cursor:none;text-align:left;
+  padding:12px 16px;background:none;border:0;cursor:pointer;text-align:left;
   font-family:'Space Grotesk',sans-serif;color:var(--ink);
 }
 .fm-level-tag{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;opacity:.72}
@@ -605,7 +624,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 .fmodal-close{
   position:absolute;top:16px;right:16px;z-index:3;width:44px;height:44px;border-radius:50%;
   border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;
-  cursor:none;transition:background .3s,color .3s;
+  cursor:pointer;transition:background .3s,color .3s;
 }
 .fmodal-close:hover{background:var(--ink);color:var(--bg)}
 
@@ -631,7 +650,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 .signup-form button{
   border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:999px;
   padding:13px 22px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .3s,color .3s;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .3s,color .3s;
 }
 .signup-form button:hover{background:var(--accent);border-color:var(--accent);color:#101010}
 .signup-ok{font-size:14px;font-weight:600;color:var(--accent)}
@@ -680,7 +699,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 }
 .chill-audio:hover{background:rgba(20,24,48,.78);border-color:rgba(255,255,255,.7)}
 .chill-play{
-  display:inline-flex;align-items:center;gap:9px;padding:0;background:none;border:0;color:inherit;cursor:none;
+  display:inline-flex;align-items:center;gap:9px;padding:0;background:none;border:0;color:inherit;cursor:pointer;
   font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
 }
 .chill-note{font-size:15px;line-height:1}
@@ -696,8 +715,8 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 .chill-divider{width:1.5px;height:18px;background:rgba(255,255,255,.3);flex:none}
 .chill-spk{flex:none;opacity:.85}
 .chill-vol{width:72px;height:3px;--fill:50%;background:linear-gradient(90deg,#fff var(--fill),rgba(255,255,255,.32) var(--fill))}
-.chill-vol::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:#fff;border:0;box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:none}
-.chill-vol::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:0;cursor:none}
+.chill-vol::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:#fff;border:0;box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer}
+.chill-vol::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:0;cursor:pointer}
 @media(max-width:760px){.chill-audio-label{display:none}.chill-vol{width:56px}}
 
 /* ------- godot badge ------- */
@@ -756,8 +775,6 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
   </defs>
 </svg>
 
-<div class="cursor"><svg class="cursor-star" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 Q60 40 96 50 Q60 60 50 96 Q40 60 4 50 Q40 40 50 4 Z"/></svg></div>
-<div class="cursor-dot"><svg class="cursor-star sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 Q60 40 96 50 Q60 60 50 96 Q40 60 4 50 Q40 40 50 4 Z"/></svg></div>
 <div class="stars" aria-hidden="true"></div>
 
 <!-- ===================== NAV ===================== -->
@@ -765,17 +782,6 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
   <a class="nav-logo" href="#top" aria-label="TobiLudo, Time Moves On">
     <img src="assets/tobiludo%20logo%20transparent.png" alt="TobiLudo">
   </a>
-  <div class="nav-links">
-    <div class="strokeme">
-      <a href="#world" data-hover>World</a>
-      <a href="#mechanics" data-hover>Mechanics</a>
-      <a href="#journey" data-hover>Journey</a>
-      <a href="#gondola" data-hover>Gondola</a>
-      <a href="#friends" data-hover>Friends</a>
-      <a href="#roadmap" data-hover>Roadmap</a>
-      <a class="btn-gdd" href="gdd_full/" data-hover>Full GDD ↓</a>
-    </div>
-  </div>
 </nav>
 
 <!-- ===================== HERO ===================== -->
@@ -792,231 +798,42 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
     <img class="hero-logo" src="assets/tmo%20title%20trans%20small.png" alt="" aria-hidden="true">
   </div>
   <div class="hero-inner">
-    <p class="hero-kicker">Time Moves On - Prototype Pitch Deck</p>
+    <p class="hero-kicker">Time Moves On</p>
     <div class="hero-sub">
-      <p>A <b>time</b> bending 2D roguelike platformer where your <b>friends</b> will shape your run. Catch the next gondola. Pass the exams. Before time runs out.</p>
-      <div class="hero-tags">
-        <span class="tag" data-hover>Roguelike</span>
-        <span class="tag" data-hover>Precision Platformer</span>
-        <span class="tag tag-godot" data-hover><img class="godot-icon-small" src="assets/godot_icon_color.png" alt="Godot Engine">Godot</span>
-        <span class="tag" data-hover>PC</span>
-      </div>
+      <p>A <b>time</b> bending 2D roguelike platformer where you can find new <b>friends</b>, but eventually, will have to <b>depart</b> with them.</p>
     </div>
   </div>
   <div class="scroll-cue"><span>Scroll</span><span class="wheel"></span></div>
 </header>
 
-<!-- ===================== MARQUEE ===================== 
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-track">
-    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
-    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
-    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
-    <span>Run <i>·</i> Jump <i>·</i> Parry <i>·</i> Hover <i>·</i> Dive <i>·</i> Dash <i>·</i> Catch the bus <i>·</i> Find Friends <i>·</i> Use Items <i>·</i> Improve your magic <i>·</i> Rise to the challenge</span>
-  </div>
-</div>-->
+<!-- ===================== FRIENDS ===================== -->
 
-<!-- ===================== PITCH ===================== -->
-<section class="section" id="pitch" data-theme-trigger="dawn">
-  <div class="container">
-    <div class="pitch-grid">
-      <div>
-        <p class="label reveal">The Pitch</p>
-        <h2 class="reveal">A wizard cat,<br>three exams,<br>and a special timer </h2>
-        <p class="lead reveal" style="margin-top:26px">
-          Kudo the cat, must travel a fragmented floating world and pass the wizarding exam at three schools.
-          Friends met on the road join the party and grant new abilities. But every friend has their own
-          path, and the bus to the next destination will not wait. Time itself reacts to how you play: sustained speed stretches
-          time itself, so don't hesitate.
-        </p>
-      </div>
-      <div class="pitch-art reveal-img">
-        <img src="assets/splash%20new%20small.jpg" alt="Time Moves On key art">
-        
-        <img class="float-kudo" src="assets/friends%20vestige.png" alt="A friend's vestige critter" data-float>
-      </div>
-    </div>
-
-    <div class="stats-band">
-      <div class="stat reveal"><div class="num" data-count="12">0</div><div class="cap">Recruitable Friends</div></div>
-      <div class="stat reveal"><div class="num" data-count="3">0</div><div class="cap">Wizarding Exams</div></div>
-      <div class="stat reveal"><div class="num" data-count="9">0</div><div class="cap">Levels per Run</div></div>
-      <div class="stat reveal"><div class="num" data-count="17">0</div><div class="cap">Items</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== PILLARS ===================== -->
-<section class="section" id="pillars">
-  <div class="container">
-    <p class="label reveal">Design Pillars</p>
-    <h2 class="reveal">Every decision<br>answers to three rules.</h2>
-    <div class="pillars">
-      <div class="pillar reveal" data-tilt>
-        <span class="idx">01</span><span class="glyph">↗</span>
-        <h3>Movement</h3>
-        <p>A physics-driven traversal system where momentum, direction and parrying combine into skill expression that grows across a run. Walls, floors and dissolving terrain all become tools.</p>
-      </div>
-      <div class="pillar reveal" data-tilt>
-        <span class="idx">02</span><span class="glyph">◷</span>
-        <h3>The Feeling of Time</h3>
-        <p>A non-linear countdown that stretches at high speed and contracts when moving slowly. The clock is a system to read and play, with items and abilities that bend it further.</p>
-      </div>
-      <div class="pillar reveal" data-tilt>
-        <span class="idx">03</span><span class="glyph">♡</span>
-        <h3>Friends Join &amp; Leave</h3>
-        <p>Friends change how the game plays. Move too slowly and they take the next bus without you. Not everyone follows your path. But, as they say, you meet twice in life.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== WORLD ===================== -->
-<section class="section" id="world">
-  <div class="container">
-    <div class="world-wrap">
-      <div class="world-map reveal-img" data-parallax-img>
-        <img src="assets/world%20map.png" alt="World map of the kingdom of Kran">
-        <figcaption class="map-cap">The kingdom of Kran: four schools, linked by gondola routes across three plains.</figcaption>
-      </div>
-      <div>
-        <p class="label reveal">The World</p>
-        <h2 class="reveal">After the Eclipse,<br>the world learned<br>to move on.</h2>
-        <div class="lore-list">
-          <div class="lore-item reveal">
-            <h4><i>I.</i> The Eclipse</h4>
-            <p>A cataclysm gave animals consciousness, erased the old civilization, and lifted the shattered earth into floating islands. Rune-inscribed monoliths appeared, humming with ambient magic.</p>
-          </div>
-          <div class="lore-item reveal">
-            <h4><i>II.</i> The Dissolution</h4>
-            <p>Solid matter is slowly dissolving back into free magical energy. Islands crumble at the edges. Skilled wizards convert that dissolution directly into momentum: a world coming apart is also a world becoming more powerful.</p>
-          </div>
-          <div class="lore-item reveal">
-            <h4><i>III.</i> The Schools</h4>
-            <p>Four grand schools, Kull, Brunn, Frun and Saus, train every inhabitant to traverse the unstable landscape. Students may never take the exam at their own school. Traversing the land is the test.</p>
-          </div>
-          <div class="lore-item reveal">
-            <h4><i>IV.</i> The Bond</h4>
-            <p>Magic also flows between creatures who understand one another. Kudo's abilities are borrowed from friends. When a friend leaves, a small critter vestige keeps a weaker version of the bond alive.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== KUDO ===================== -->
-<section class="section kudo-sec" id="kudo">
-  <div class="container">
-    <div class="kudo-grid">
-      <div>
-        <p class="label reveal">The Player Character</p>
-        <h2 class="reveal">Meet Kudo.</h2>
-        <p class="lead reveal" style="margin-top:24px">
-          A young wizard cat from Kull: big hat, sparkle accessory, purple triangular coat,
-          pool-noodle limbs and one visible fang. The silhouette reads fast and a little stretchy.
-          Kudo starts the journey confident but essentially alone. However, not for long. Many friends await.
-        </p>
-        <h3 class="kstat-header reveal">Kudo Stats</h3>
-        <div class="kudo-stats">
-          <div class="kstat reveal"><b>100 HP</b><span>Starting Health</span></div>
-          <div class="kstat reveal"><b>100 MP</b><span>Starting Mana</span></div>
-          <div class="kstat reveal"><b>9</b><span>Lives per Run</span></div>
-          <div class="kstat reveal"><b>500</b><span>Run Speed (units)</span></div>
-        </div>
-      </div>
-      <div class="kudo-art reveal">
-        <div class="kudo-ring"></div>
-        <img class="main" src="assets/kudo%20main.png" alt="Kudo character art" data-float>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== MECHANICS ===================== -->
-<section class="section" id="mechanics" data-theme-trigger="dawn">
-  <div class="container">
-    <p class="label reveal">Core Mechanics</p>
-    <h2 class="reveal">Don't take our word for it.<br>Try the systems.</h2>
-
-    <div class="widgets">
-      <!-- TIME DILATION WIDGET -->
-      <div class="widget reveal">
-        <h3>Speed bends time</h3>
-        <p class="hint">Drag the slider. Faster movement stretches the level's total time budget; the tick dial slows down.</p>
-        <div class="dial-row">
-          <div class="dial">
-            <svg width="170" height="170" viewBox="0 0 170 170">
-              <circle cx="85" cy="85" r="74" fill="none" stroke="var(--line)" stroke-width="10"/>
-              <circle id="dialArc" cx="85" cy="85" r="74" fill="none" stroke="var(--accent)" stroke-width="10"
-                      stroke-linecap="round" stroke-dasharray="465" stroke-dashoffset="0"/>
-            </svg>
-            <div class="tickno" id="tickNo">10</div>
-          </div>
-          <div class="dial-data">
-            <div class="big"><i id="speedVal">500</i> speed</div>
-            <small id="dilLine">Dilation ×1.0 · 100s total budget</small>
-            <div class="range-wrap">
-              <input type="range" id="speedRange" min="0" max="1000" step="5" value="500" autocomplete="off" data-hover>
-            </div>
-            <div class="range-caps"><span>0 · still</span><span>500 · default</span><span>2000 · max</span></div>
-          </div>
-        </div>
-        <div class="runner-stage" aria-hidden="true">
-          <div class="runner-track" id="runnerTrack"></div>
-          <div class="speedlines" id="speedLines"></div>
-          <img id="runnerKudo" src="assets/kudo%20main.png" alt="">
-        </div>
-      </div>
-
-      <!-- PARRY WIDGET -->
-      <div class="widget reveal">
-        <h3>Three ways to parry</h3>
-        <p class="hint">One button, three directions, a 5-frame window. The last frame is a perfect parry.</p>
-        <div class="parry-stage">
-          <img class="parry-kudo" id="parryKudo" src="assets/kudo%20main.png" alt="Kudo ready to parry">
-          <div class="parry-cone" id="parryCone"></div>
-          <div class="parry-fx" id="parryFx"></div>
-        </div>
-        <div class="parry-btns">
-          <button class="pbtn" data-dir="up" data-hover>▲ Upward</button>
-          <button class="pbtn" data-dir="fwd" data-hover>▶ Forward</button>
-          <button class="pbtn" data-dir="down" data-hover>▼ Downward</button>
-        </div>
-        <p class="parry-desc" id="parryDesc">Pick a direction to see what it does.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== JOURNEY INTRO ===================== -->
-<section class="section" id="journey" data-theme-trigger="dusk">
-  <div class="container journey-intro">
-    <p class="label reveal" style="justify-content:center">The Journey</p>
-    <h2 class="reveal">Three plains.<br>Three schools.<br>Three ways to move.</h2>
-    <p class="lead reveal">
-      Choosing a school path after each level also chooses your next movement challenge.
-      The route to every school passes through its plain, and each plain plays by its own physics.
+<section class="friends-sec" id="friends" data-theme-trigger="dawn">
+  <div class="friends-head">
+    <h2 class="reveal">Twelve friends will join your journey.</h2>
+    <p class="lead reveal" style="margin-top:22px">
+      Each friend grants an ability. They can leave, but if you reconnect, their ability will be leveled up!
     </p>
   </div>
+  <div class="friends-grid" id="friendsTrack"><!-- cards injected by JS --></div>
 </section>
 
 <!-- ===================== PLAIN: BRUNN ===================== -->
 <section class="plain" id="plain-brunn" data-theme-trigger="brunn">
+  <div class="plain-bg" aria-hidden="true"><img src="assets/level%20concept%20upper%20lane.png" alt=""></div>
   <span class="plain-num">01</span>
   <div class="plain-grid">
     <div>
       <p class="label reveal">Hohenberg · The Upper Plain</p>
-      <h2 class="reveal">Brunn climbs.<br><span class="accent">So will you.</span></h2>
+      <h2 class="reveal">At the top<br><span class="accent">lies Brunn</span></h2>
       <div class="plain-meta reveal">
-        <span class="tag" data-hover>Vertical platforming</span>
-        <span class="tag" data-hover>Alpine · clear sky</span>
-        <span class="tag" data-hover>Difficulty: medium</span>
+        <span class="tag">Vertical platforming</span>
+        <span class="tag">Alpine</span>
+        <span class="tag">Difficulty: medium</span>
       </div>
       <p class="desc reveal">
-        The Alpine islands of Hohenberg, rise above the kingdom. Wooden scaffolding and light fabrics adapt to the high winds. Right angles
-        dominate, so precision matters. Wall bounces, upward parries and high jumps carry you through
-        towers and opposing-wall climbs. Missing a platform is punishing, and gravity works against you.
+        The Alpine islands of Hohenberg, rise above the kingdom. Wooden scaffolding and light fabrics sway in the wind. Right angles
+        dominate, making you use wall bounces, upward parries and high jumps. Missing a platform is punishing, and gravity works against you.
       </p>
       <div class="school-line reveal">
         <div class="school-roster">
@@ -1029,7 +846,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
             <div class="avatar"><img src="assets/bartholoomaeus%20dodo.png" alt="Bartholomäus, examiner of Brunn"></div>
           </figure>
         </div>
-        <p><b>School of Brunn.</b> Endurance and vertical agility. Home of the royal family Antritz and the most prestigious school in the kingdom, despite its current state.</p>
+        <p><b>School of Brunn.</b> Home of the royal family Antritz and the most prestigious school in the kingdom, despite its current state.</p>
       </div>
     </div>
     <div class="plain-art reveal-img" data-parallax-img>
@@ -1040,6 +857,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 
 <!-- ===================== PLAIN: FRUN ===================== -->
 <section class="plain" id="plain-frun" data-theme-trigger="frun">
+  <div class="plain-bg" aria-hidden="true"><img src="assets/level%20concept%20middle%20lane.png" alt=""></div>
   <span class="plain-num">02</span>
   <div class="plain-grid">
     <div class="plain-art reveal-img" data-parallax-img>
@@ -1047,17 +865,15 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
     </div>
     <div>
       <p class="label reveal">Wellenfeld · The Middle Plain</p>
-      <h2 class="reveal">Frun flows.<br><span class="accent">Keep moving.</span></h2>
+      <h2 class="reveal">Keep the flow<br><span class="accent">to reach Frun</span></h2>
       <div class="plain-meta reveal">
-        <span class="tag" data-hover>Horizontal momentum</span>
-        <span class="tag" data-hover>Full sun</span>
-        <span class="tag" data-hover>Difficulty: easiest</span>
+        <span class="tag">Horizontal momentum</span>
+        <span class="tag">Grassy Hills</span>
+        <span class="tag">Difficulty: easy</span>
       </div>
       <p class="desc reveal">
-        The grassy field of Wellenfeld, strechts across islands of rolling hills. Mounds, trees and tall grass sway gently in the breeze.
-        Shallow angles allow Kudo to preserve momentum, creating a rhythm of traversing gaps:
-        Some cleared with a simple jump, others demand speed, dashing or a perfectly timed parry.
-        Always cheerful and bright, never dark.
+        The grassy field of Wellenfeld, strechts across islands of rolling hills. Mounds, trees and tall grass sway gently.
+        Shallow angles allow Kudo to preserve momentum, creating a rhythm of traversing gaps.
       </p>
       <div class="school-line reveal">
         <div class="school-roster">
@@ -1069,7 +885,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
             <div class="avatar"><img src="assets/onondaga%20moose.png" alt="Onondaga, examiner of Frun"></div>
           </figure>
         </div>
-        <p><b>School of Frun.</b> Speed and horizontal momentum, the most widely practiced tradition in the kingdom. Frun trains generalists.</p>
+        <p><b>School of Frun.</b> Speed and horizontal momentum, the most widely practiced tradition in the kingdom.</p>
       </div>
     </div>
   </div>
@@ -1077,21 +893,21 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 
 <!-- ===================== PLAIN: SAUS ===================== -->
 <section class="plain" id="plain-saus" data-theme-trigger="saus">
+  <div class="plain-bg" aria-hidden="true"><img src="assets/level%20concept%20lower%20lane.png" alt=""></div>
   <span class="plain-num">03</span>
   <div class="plain-grid">
     <div>
       <p class="label reveal">Tropffall · The Lower Plain</p>
-      <h2 class="reveal">Saus falls.<br><span class="accent">Fall better.</span></h2>
+      <h2 class="reveal">Down at bottom<br><span class="accent">Saus awaits.</span></h2>
       <div class="plain-meta reveal">
-        <span class="tag" data-hover>Controlled falling</span>
-        <span class="tag" data-hover>Night · bioluminescent</span>
-        <span class="tag" data-hover>Difficulty: hardest</span>
+        <span class="tag">Controlled falling</span>
+        <span class="tag">Night · bioluminescent</span>
+        <span class="tag">Difficulty: hard</span>
       </div>
       <p class="desc reveal">
-        Tropffall is the most dissolved terrain in the kingdom: glowing mushrooms, alien ferns, tear-shaped
-        platforms with narrow tops and wide bellies. Descend through long drops, manage fall speed,
-        and dive along a teardrop's curve to convert a deadly fall into pure horizontal speed.
-        Beautiful and eerie.
+        Tropffall is the most dissolved terrain in the kingdom. Tear-shaped islands, form the landscape. 
+        Descend through long drops, manage fall speed,
+        and dive along a teardrop's curve to convert a fall into horizontal speed.
       </p>
       <div class="school-line reveal">
         <div class="school-roster">
@@ -1103,7 +919,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
             <div class="avatar"><img src="assets/quenendroth%20octopus.png" alt="Quenendroth Oluminos, examiner of Saus"></div>
           </figure>
         </div>
-        <p><b>School of Saus.</b> Transformation. What others consider dangerous, Saus students consider a resource.</p>
+        <p><b>School of Saus.</b> What others consider dangerous, Saus students consider a resource.</p>
       </div>
     </div>
     <div class="plain-art reveal-img" data-parallax-img>
@@ -1112,178 +928,12 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
   </div>
 </section>
 
-<!-- ===================== GONDOLA ===================== -->
-<section class="section gondola-sec" id="gondola" data-theme-trigger="dusk">
-  <div class="container">
-    <p class="label reveal">Between Levels</p>
-    <h2 class="reveal">Catch the gondola.<br>Catch your breath.</h2>
-    <p class="lead reveal" style="margin-top:22px">
-      Every leg of the journey is ridden on a gondola, part cable-car, part creature. Inside is the
-      social hub: browse the item shop, buy friendship items at the vending machine, and sit with your
-      party by the window while the broken world drifts past. Run out of time, though, and it leaves
-      without you.
-    </p>
-
-    <div class="gondola-feature-pair">
-      <figure class="gondola-feature reveal-img" data-parallax-img>
-        <img loading="lazy" src="assets/gondola%20inside%20cropped.png" alt="Inside the gondola: friends relaxing together on the bench">
-        <figcaption class="gondola-feature-cap">
-          <b>The main car</b>
-          <span>Friends · item shop · friendship vending · the conductor</span>
-        </figcaption>
-      </figure>
-      <figure class="gondola-feature reveal-img" data-parallax-img>
-        <img loading="lazy" src="assets/chill%20area.png" alt="The gondola's chill area: a friend watching the moonlit sky drift past">
-        <div class="chill-audio" id="chillAudioCtl">
-          <button class="chill-play" id="chillAudioBtn" type="button" data-hover aria-label="Play relaxing music">
-            <span class="chill-note" aria-hidden="true">♪</span>
-            <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            <span class="chill-audio-label">Play the calm</span>
-          </button>
-          <span class="chill-divider" aria-hidden="true"></span>
-          <svg class="chill-spk" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <input type="range" class="chill-vol" id="chillVol" min="0" max="100" value="50" autocomplete="off" data-hover aria-label="Music volume">
-        </div>
-        <audio id="chillAudio" src="assets/peaceful%20time%202.mp3" loop preload="none"></audio>
-        <figcaption class="gondola-feature-cap">
-          <b>The chill area</b>
-          <span>Sit by the window and watch the broken world drift past</span>
-        </figcaption>
-      </figure>
-    </div>
-
-    <div class="gondola-trio">
-      <figure class="gondola-card reveal">
-        <img loading="lazy" src="assets/gondola%20middle.png" alt="The gondola crossing the middle plain">
-        <figcaption><b>Wellenfeld</b><span>Middle plain · clear blue sky</span></figcaption>
-      </figure>
-      <figure class="gondola-card reveal">
-        <img loading="lazy" src="assets/gondola%20upper.png" alt="The gondola crossing the upper plain">
-        <figcaption><b>Hohenberg</b><span>Upper plain · alpine heights</span></figcaption>
-      </figure>
-      <figure class="gondola-card reveal">
-        <img loading="lazy" src="assets/gondola%20lower.png" alt="The gondola crossing the lower plain">
-        <figcaption><b>Tropffall</b><span>Lower plain · bioluminescent deep</span></figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== FRIENDS ===================== -->
-
-<section class="friends-sec" id="friends" data-theme-trigger="night">
-  <div class="friends-head">
-    <p class="label reveal">The Party</p>
-    <h2 class="reveal">Twelve friends.<br>Twelve ways to play.</h2>
-    <p class="lead reveal" style="margin-top:22px">
-      Each friend grants an ability with three tiers. Recruit them, lose them to their own journeys,
-      and find them again to unlock their strongest form. Scroll sideways, click a card for the full story.
-    </p>
-  </div>
-  <div class="friends-pin">
-    <div class="friends-track" id="friendsTrack"><!-- cards injected by JS --></div>
-  </div>
-</section>
-
-<!-- ===================== VESTIGE ===================== -->
-<section class="vestige section" id="vestige" data-theme-trigger="night">
-  <div class="container">
-    <blockquote class="reveal">
-      "When a friend leaves, they leave a little critter behind.<br>
-      <span class="dim">Weaker than the original. But still real.</span>"
-    </blockquote>
-    <div class="v-art">
-      <img class="reveal" src="assets/friends%20vestige.png" alt="Vestige critters">
-      <img class="reveal" src="assets/ruppel%20vestige.png" alt="Ruppel and his vestige">
-    </div>
-    <p class="note reveal">
-      Vestiges keep a Level 0 version of a departed friend's ability, take no party slot,
-      and crawl out of Kudo's coat when you stand still. Reunite with the friend while their
-      vestige is with you, and they return at Level 2, stronger than before. Departure is
-      memory, never loss.
-    </p>
-  </div>
-</section>
-
-<!-- ===================== CHANCELLORS ===================== -->
-<section class="section" id="chancellors" data-theme-trigger="night">
-  <div class="container">
-    <p class="label reveal">The Examiners</p>
-    <h2 class="reveal">Four schools,<br>four Grand Wizard Chancellors.</h2>
-    <p class="lead reveal" style="margin-top:22px">
-      Each exam is a race. The chancellor conjures a copy of Kudo that runs the course at par time.
-      Beat it, earn the badge. Lose, and the run ends.
-    </p>
-    <div class="chan-grid">
-      <div class="chan reveal" data-hover style="--school:#b18cff">
-        <img src="assets/gernot%20elephant.png" alt="Gernot von Anßka, elephant">
-        <div class="veil"><b>Gernot von Anßka</b><i>Elephant · Kull</i><p>Elegant and thoughtful. Chancellor of Kudo's own modest home school.</p></div>
-      </div>
-      <div class="chan reveal" data-hover style="--school:#6fb3ff">
-        <img src="assets/bartholoomaeus%20dodo.png" alt="Bartholomäus, dodo">
-        <div class="veil"><b>Bartholomäus B. von Antritz und Hohenberg</b><i>Dodo · Brunn</i><p>A prince of his noble house, yet insecure because of his older brother Deusolbert.</p></div>
-      </div>
-      <div class="chan reveal" data-hover style="--school:#8fd398">
-        <img src="assets/onondaga%20moose.png" alt="Onondaga, moose">
-        <div class="veil"><b>Onondaga</b><i>Moose · Frun</i><p>Wise. Talks slowly. Uses few words.</p></div>
-      </div>
-      <div class="chan reveal" data-hover style="--school:#ff7a6e">
-        <img src="assets/quenendroth%20octopus.png" alt="Quenendroth Oluminos, octopus">
-        <div class="veil"><b>Quenendroth Oluminos</b><i>Octopus · Saus</i><p>Each tentacle has its own brain, used to solve Rubik's cubes. Probably the mightiest wizard in the kingdom.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ROADMAP ===================== -->
-<section class="section roadmap" id="roadmap" data-theme-trigger="night">
-  <div class="container">
-    <p class="label reveal">Scope &amp; Milestones</p>
-    <h2 class="reveal">From solo demo<br>to playable prototype.</h2>
-    <div class="timeline">
-      <div class="tl-progress" id="tlProgress"></div>
-      <div class="tl-item reveal">
-        <span class="when">Aug 2026 · M1</span>
-        <h4>Movement prototype</h4>
-        <p>Running, jumping and falling on the full physics spec. All three parry directions. Hover and Dive at Level 1, playable in grey-box.</p>
-      </div>
-      <div class="tl-item reveal">
-        <span class="when">Sep 2026 · M2</span>
-        <h4>Time system</h4>
-        <p>Tick system with speed-based dilation and the circular countdown display.</p>
-      </div>
-      <div class="tl-item reveal">
-        <span class="when">Nov 2026 · M3</span>
-        <h4>Funding demo</h4>
-        <p>The tutorial playable start to finish, the recruit/vestige loop functional, and all three pillars demonstrated to funders.</p>
-      </div>
-      <div class="tl-item reveal">
-        <span class="when">Feb 2027 · M4</span>
-        <h4>Design-complete</h4>
-        <p>All 9 level layouts, 12 friend backstories, bus dialogue, concept art and ~25 item effects specified before implementation begins.</p>
-      </div>
-      <div class="tl-item reveal">
-        <span class="when">Jul 2027 · M7</span>
-        <h4>Grey-box demo, external playtesting</h4>
-        <p>A complete run from Level 0 through Boss 3, handed to external playtesters while there is still time to act on feedback.</p>
-      </div>
-      <div class="tl-item reveal">
-        <span class="when">Dec 2027 · M10</span>
-        <h4>Prototype complete</h4>
-        <p>Full asset integration, balance pass and polish. 12 friends, 9 levels, 3 exams, one session, ready to show.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ===================== FOOTER ===================== -->
 <footer class="footer" id="end" data-theme-trigger="night">
+  <div class="footer-bg" aria-hidden="true"><img src="assets/depart.png" alt=""></div>
   <div class="footer-gondola" aria-hidden="true"><img src="assets/gondola%20transparent.png" alt=""></div>
   <div>
-    <h2 class="reveal">The bus<br>is leaving.</h2>
-    <a class="cta reveal" role="button" tabindex="0" data-hover aria-disabled="true">
-      Read the full Game Design Document <span class="arrow">→</span>
-    </a>
+    <h2 class="reveal">The gondola<br>is leaving.</h2>
   </div>
   <div class="footer-playground" id="footerPlay" aria-hidden="true"></div>
   <div class="signup-grid">
@@ -1306,7 +956,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
   </div>
   <div class="studio reveal">
     <span class="studio-by">A game by</span>
-    <div class="studio-lockup" data-hover>
+    <div class="studio-lockup">
       <img class="studio-logo" src="assets/tobiludo%20logo%20transparent.png" alt="TobiLudo game studio">
       <img class="studio-fish" src="assets/fisch.png" alt="" aria-hidden="true">
     </div>
@@ -1316,12 +966,6 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
     <span>·</span>
     <span>A TobiLudo production</span>
     <span>·</span>
-    <span>GDD Showcase</span>
-    <span>·</span>
-    <span class="godot-badge"><img class="godot-icon" src="assets/godot_icon_color.png" alt="Godot Engine"> Built in Godot 4.x</span>
-    <span>·</span>
-    <span>Windows PC</span>
-    <span>·</span>
     <span>Prototype target: Dec 2027</span>
   </div>
 </footer>
@@ -1330,7 +974,7 @@ body[data-theme="saus"] .stars,body[data-theme="night"] .stars,body[data-theme="
 <div class="fmodal" id="fmodal" aria-hidden="true">
   <div class="fmodal-backdrop" id="fmodalBackdrop"></div>
   <div class="fmodal-panel" role="dialog" aria-modal="true" aria-labelledby="fmName">
-    <button class="fmodal-close" id="fmodalClose" data-hover aria-label="Close">✕</button>
+    <button class="fmodal-close" id="fmodalClose" aria-label="Close">✕</button>
     <div class="fmodal-art"><img id="fmArt" src="" alt=""></div>
     <div class="fmodal-info">
       <span class="fm-chip" id="fmSchool"></span>
@@ -1358,49 +1002,58 @@ var hasGsap = typeof gsap !== "undefined";
 var SCHOOL_COLORS = { Kull:"#b18cff", Brunn:"#6fb3ff", Frun:"#8fd398", Saus:"#ff7a6e" };
 var FRIENDS = [
   {name:"Üwe", animal:"Owl", school:"Kull", ability:"Hover", persona:"Scholarly and wise, but sometimes forgetful.", img:"assets/uewe%20owl.png",
-   tag:"Hold to bend your fall: rise up, hang steady, or feather a drop.",
-   tiers:["Half the lift, and it costs more mana.","5 mana/frame: +50 lift, or kill your fall speed.","Cheaper at 2 mana/frame, and re-enters instantly."]},
-  {name:"Ruppel", animal:"Red Panda", school:"Kull", ability:"Dive", persona:"Careful and shy. Underestimates himself.", img:"assets/ruppel%20red%20panda.png",
-   tag:"Slam downward on purpose, then stick the landing.",
-   tiers:["Only a 5% fall-damage cut.","Dive past the cap; a parry cuts fall damage up to 75%.","Up to 90% off. Slides turn the fall into pure speed."]},
+   tag:"Hower helps manipulate your vertical movement. Jump higher, stay steady when going fast, or feather a fall.",
+   tiers:["Half the lift, and it costs more mana.","5 mana/frame: +50 lift per frame, or stay steady.","Cheaper at 2 mana/frame, and instantly switch between vertical and horizontal hover."]},
+  {name:"Ruppel", animal:"Red Panda", school:"Kull", ability:"Dive", persona:"Careful and shy. Underestimates herself.", img:"assets/ruppel%20red%20panda.png",
+   tag:"Dive downwards and gain a lot of speed.",
+   tiers:["Less fall damage reduction.","Dive, gain speed and reduce fall damage.","Greatly increased fall damange reduction."]},
   {name:"Lule", animal:"Rabbit", school:"Brunn", ability:"Double Jump", persona:"Has a hard time sitting still. Forgetful.", img:"assets/lule%20rabbit.png",
-   tag:"A second jump in mid-air, as long as you're still rising.",
-   tiers:["20 mana, and a shorter hang.","10 mana: a full second jump at the apex.","A third jump unlocks. Stack them skyward."]},
+   tag:"A second jump in mid-air.",
+   tiers:["20 mana cost","10 mana cost, for a full second jump mid air","Triple jump."]},
   {name:"Henry", animal:"Goose", school:"Brunn", ability:"In-Air Mana Regen", persona:"Likes to stay in line and follow others.", img:"assets/henry%20goose.png",
-   tag:"Stay airborne, stay topped up on mana.",
-   tiers:["A trickle: +1 mana per tick.","+10 mana per tick while off the ground.","Plus every ability costs 50% less mana."]},
+   tag:"Staying airborne regenerates your mana.",
+   tiers:["+1 mana per tick.","+10 mana per tick while off the ground.","+10 mana per tick, and every ability costs 50% less mana while mid air."]},
   {name:"St. Deusolbert", animal:"Kiwi", school:"Brunn", ability:"Speed Buildup", persona:"Noble and commanding. Boss energy.", img:"assets/deusolbert%20kiwi.png",
-   tag:"Refuse to parry and watch your speed climb. One parry resets it.",
-   tiers:["+1 speed per quiet tick.","+5 run & jump speed every tick without a parry.","+10 per tick, but the clock ticks twice as fast."]},
+   tag:"Build up speed, but don't use parry.",
+   tiers:["+10 speed per tick.","+50 run & jump speed every tick without a parry.","+100 speed per tick, but the clock ticks twice as fast."]},
   {name:"Brimi", animal:"Mouse", school:"Brunn", ability:"Gold → Mana", persona:"Has the largest hat in the kingdom and is very proud of it.", img:"assets/brimi%20mouse.png",
-   tag:"Your coin purse doubles as a mana tank.",
-   tiers:["+0.1 max mana per coin carried.","+0.5 max mana per coin carried.","At empty mana, spells are paid straight from gold."]},
+   tag:"Gold converts to mana.",
+   tiers:["+0.1 max mana per gold carried.","+0.5 max mana per gold carried.","When mana is empty mana, spells are paid with gold."]},
   {name:"Scheri", animal:"Crab", school:"Frun", ability:"Mana Boost", persona:"Pinches you when they get too excited.", img:"assets/scheri%20crab.png",
-   tag:"Burn mana to run harder and shrug off hard landings.",
-   tiers:["Pricey: 4 mana per HP saved.","Run 600 / jump 900; spend mana to cancel fall damage.","Run 750 / jump 1200; just 1 mana per HP saved."]},
+   tag:"Use mana to run harder and reduce fall damage.",
+   tiers:["4 mana per HP saved.","Run faster, jump higher, or mitigate fall damage, by paying mana.","Stronger boost, at lower cost."]},
   {name:"Flimzahn", animal:"Fox", school:"Frun", ability:"Gold Bonus per Tick", persona:"Inquisitive, easygoing.", img:"assets/flimzahn%20fox.png",
-   tag:"Hoover up coins in one tick for an exploding bonus.",
-   tiers:["A gentler curve (1.35^x).","Bonus gold = 1.5^x coins grabbed that tick.","1.75^x. Ten coins in a tick pays out 269."]},
+   tag:"Collecting gold fast, gets rewarded",
+   tiers:["Less drastic exponent","Each coin collected in the same tick grants exponential gold.","Higher exponent. Ten coins in a tick pay out 269 gold."]},
   {name:"Sonelle", animal:"Deer", school:"Frun", ability:"Perfect Parry Boost", persona:"Graceful and slender, with high expectations.", img:"assets/sonelle%20deer.png",
-   tag:"Nail a perfect parry, fling yourself even faster.",
-   tiers:["A slim ×1.01 bonus.","An extra ×1.1 on top of every perfect parry.","×2.0, but every parry must be frame-perfect."]},
+   tag:"Perfect parrying is rewarded even more.",
+   tiers:["A slim ×1.01 bonus.","An extra ×1.1 on top of every perfect parry.","×2.0, but parries can only activate if frame-perfect."]},
   {name:"Wani Seegrau", animal:"Crocodile", school:"Saus", ability:"Dash", persona:"Hard to tell what he's thinking. Mostly just happy to be around.", img:"assets/wani%20crocodile.png",
-   tag:"A single-frame burst of speed, on demand.",
-   tiers:["50 mana, and no vertical control.","30 mana: +750 in the way you're facing.","Aim it any direction, even straight down."]},
+   tag:"A directional burst of speed.",
+   tiers:["50 mana, and only horizontal.","30 mana: +750 in the direction you're going.","Dash in any direction."]},
   {name:"Tummillo", animal:"Armadillo", school:"Saus", ability:"Momentum Shift", persona:"Open-minded and flexible.", img:"assets/tumillo%20armadillo.png",
-   tag:"Pour your speed from one axis into the other.",
-   tiers:["Locked. Can't be used.","Turn horizontal speed into a launch up or down.","Also fling falls sideways, for a little HP."]},
+   tag:"Convert speed from one axis into another.",
+   tiers:["Can't be used.","Turn horizontal speed into a launch up or down.","Convert fallspeed into horizontal speed."]},
   {name:"John", animal:"Goat", school:"Saus", ability:"Time Freeze", persona:"Shy and reclusive. Talks about higher dimensions.", img:"assets/john%20goat.png",
-   tag:"Stop the clock. Spend mana, buy time.",
-   tiers:["Steep: 100 mana per second.","Freeze the timer for 50 mana per second.","Dirt cheap at 20 mana per second."]}
+   tag:"Stop the clock.",
+   tiers:["100 mana per second.","Freeze the timer, for 50 mana per second.","20 mana per second."]}
 ];
 
 var track = document.getElementById("friendsTrack");
 if (track){
+  // two schools per row, in journey order, which lands six cards on each
+  var ROW_GROUPS = [["Kull","Brunn"],["Frun","Saus"]];
+  var rows = {};
+  ROW_GROUPS.forEach(function(group){
+    var row = document.createElement("div");
+    row.className = "friends-row";
+    row.setAttribute("data-schools", group.join(" "));
+    group.forEach(function(s){ rows[s] = row; });
+    track.appendChild(row);
+  });
   FRIENDS.forEach(function(f){
     var card = document.createElement("div");
     card.className = "fcard";
-    card.setAttribute("data-hover","");
     card.setAttribute("role","button");
     card.setAttribute("tabindex","0");
     card.style.setProperty("--school", SCHOOL_COLORS[f.school]);
@@ -1413,12 +1066,12 @@ if (track){
       '<p class="persona">'+f.persona+'</p>';
     card.addEventListener("click", function(){ openFriendModal(f); });
     card.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();openFriendModal(f);} });
-    track.appendChild(card);
+    (rows[f.school] || track).appendChild(card);
   });
   var outro = document.createElement("div");
   outro.className = "fcard outro";
   outro.innerHTML = '<h4>30–50 friends<br>in the full game.</h4><p>The prototype ships with these twelve. Every one of them has a home school, a voice, and a bus they would rather take.</p>';
-  track.appendChild(outro);
+  
 }
 
 /* ---------- friend modal ---------- */
@@ -1441,7 +1094,7 @@ function openFriendModal(f){
   var LEVEL_LABELS=[["LVL 0","Vestige"],["LVL 1","Recruited"],["LVL 2","Reunited"]];
   document.getElementById("fmLevels").innerHTML = f.tiers.map(function(txt,i){
     return '<div class="fm-level" data-open="'+(i===1?'true':'false')+'">'+
-             '<button class="fm-level-head" type="button" data-hover>'+
+             '<button class="fm-level-head" type="button">'+
                '<span class="fm-level-tag"><b>'+LEVEL_LABELS[i][0]+'</b> · '+LEVEL_LABELS[i][1]+'</span>'+
                '<span class="fm-level-plus">+</span>'+
              '</button>'+
@@ -1604,28 +1257,6 @@ if (chillBtn && chillAudio){
       if(!chillAudio.paused){ if(fadeRAF){cancelAnimationFrame(fadeRAF);fadeRAF=null;} chillAudio.volume=targetVol; }
     });
   }
-}
-
-/* ---------- custom cursor ---------- */
-var cursor = document.querySelector(".cursor");
-var dot = document.querySelector(".cursor-dot");
-if (cursor && dot && window.matchMedia("(pointer:fine)").matches){
-  var cx=-100, cy=-100, tx=-100, ty=-100;
-  window.addEventListener("mousemove", function(e){
-    tx=e.clientX; ty=e.clientY;
-    dot.style.transform = "translate("+tx+"px,"+ty+"px)";
-  });
-  (function loop(){
-    cx += (tx-cx)*0.16; cy += (ty-cy)*0.16;
-    cursor.style.transform = "translate("+cx+"px,"+cy+"px)";
-    requestAnimationFrame(loop);
-  })();
-  document.addEventListener("mouseover", function(e){
-    if (e.target.closest("[data-hover],a,button,input")){ cursor.classList.add("is-hover"); dot.classList.add("is-hover"); }
-  });
-  document.addEventListener("mouseout", function(e){
-    if (e.target.closest("[data-hover],a,button,input")){ cursor.classList.remove("is-hover"); dot.classList.remove("is-hover"); }
-  });
 }
 
 /* ---------- stars ---------- */
@@ -1803,6 +1434,20 @@ if (hasGsap && !reduceMotion){
     });
   }
 
+  /* hero: pin the sub-copy to the kicker's width so both lines end on the same edge.
+     The trailing letter-spacing sits after the last glyph, so subtract it. */
+  var heroKicker=document.querySelector(".hero-kicker");
+  if(heroKicker){
+    var syncKickerWidth=function(){
+      var fs=parseFloat(getComputedStyle(heroKicker).fontSize);
+      var w=heroKicker.getBoundingClientRect().width-fs*.4;
+      document.documentElement.style.setProperty("--kicker-w",w+"px");
+    };
+    syncKickerWidth();
+    window.addEventListener("resize",syncKickerWidth);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(syncKickerWidth);
+  }
+
   /* hero intro: scene layers + logo float in from the top, staggered */
   var heroTl=gsap.timeline({delay:.1});
   heroTl.fromTo(".hero-l-bg",{yPercent:-7,opacity:0},{yPercent:0,opacity:1,duration:1.5,ease:"power3.out"},0)
@@ -1814,9 +1459,12 @@ if (hasGsap && !reduceMotion){
         .to(".scroll-cue",{opacity:1,duration:.8},"-=.45");
 
   /* hero: gentle continuous float once settled */
-  gsap.to(".hero-l-friends",{y:-13,duration:3.4,ease:"sine.inOut",yoyo:true,repeat:-1,delay:1.7});
-  gsap.to(".hero-l-kudo",{y:-22,duration:2.8,ease:"sine.inOut",yoyo:true,repeat:-1,delay:1.9});
-  gsap.to(".hero-logo",{y:-11,duration:3.8,ease:"sine.inOut",yoyo:true,repeat:-1,delay:2.1});
+  /* one shared duration and start time keeps the three layers in phase; only the travel
+     distance differs, so they still read as separate depths */
+  var floatTl=gsap.timeline({delay:2.3});
+  floatTl.to(".hero-l-friends",{y:-13,duration:3.2,ease:"sine.inOut",yoyo:true,repeat:-1},0)
+         .to(".hero-l-kudo",{y:-22,duration:3.2,ease:"sine.inOut",yoyo:true,repeat:-1},0)
+         .to(".hero-logo",{y:-11,duration:3.2,ease:"sine.inOut",yoyo:true,repeat:-1},0);
 
   /* hero parallax: whole scene moves together, stays aligned */
   gsap.to(".hero-stage",{yPercent:14,scale:1.05,ease:"none",
@@ -1825,9 +1473,6 @@ if (hasGsap && !reduceMotion){
     scrollTrigger:{trigger:".hero",start:"top top",end:"bottom 45%",scrub:true}});
   gsap.to(".hero-inner",{yPercent:-14,opacity:.25,ease:"none",
     scrollTrigger:{trigger:".hero",start:"top top",end:"bottom 30%",scrub:true}});
-
-  /* marquee scrub + drift */
-  gsap.to(".marquee-track",{xPercent:-50,ease:"none",duration:28,repeat:-1});
 
   /* generic reveals */
   gsap.utils.toArray(".reveal").forEach(function(el){
@@ -1857,20 +1502,20 @@ if (hasGsap && !reduceMotion){
 
   /* theme journey is handled by the IntersectionObserver above (runs regardless of GSAP) */
 
-  /* horizontal friends scroll: pinned scrub on wider screens; mobile/touch keeps native swipe (CSS) */
-  if (track && window.matchMedia("(min-width: 821px)").matches){
-    var pin=document.querySelector(".friends-pin");
-    pin.classList.add("is-pinned");
-    var getScroll=function(){return track.scrollWidth - window.innerWidth;};
-    gsap.to(track,{x:function(){return -getScroll();},ease:"none",force3D:true,
-      scrollTrigger:{
-        trigger:pin,start:"top top",pin:true,scrub:0.6,
-        end:function(){return "+="+getScroll();},
-        anticipatePin:1,
-        fastScrollEnd:true,
-        invalidateOnRefresh:true
-      }});
-  }
+  /* friends grid: each row fades up, cards staggered left to right.
+     fromTo + immediateRender:false so a ScrollTrigger refresh (which fires on window load,
+     once the lazy card images settle) cannot re-apply the start offsets to cards that
+     already finished. clearProps then drops the inline transform, which would otherwise
+     sit on top of the :hover lift. */
+  gsap.utils.toArray(".friends-row").forEach(function(row){
+    var when={trigger:row,start:"top 88%",once:true};
+    // the row carries the lift, so the cards can never sit at six different heights
+    gsap.fromTo(row,{y:34},{y:0,duration:.7,ease:"power3.out",
+      immediateRender:false,clearProps:"transform",scrollTrigger:when});
+    // only the fade is staggered, which reads left to right without moving anything
+    gsap.fromTo(row.children,{opacity:0},{opacity:1,duration:.5,stagger:.07,ease:"power2.out",
+      immediateRender:false,clearProps:"opacity",scrollTrigger:when});
+  });
 
   /* timeline progress line */
   var tlp=document.getElementById("tlProgress");

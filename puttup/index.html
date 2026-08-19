@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PuttUP - 2D Minigolf Simulation</title>
+<meta name="description" content="PuttUP: a 2D minigolf simulation with a track editor, built in Java. Playable in the browser or as a download.">
+<link rel="icon" type="image/png" href="cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4ecdd; --ink:#1d1a15; --line:rgba(29,26,21,.14);
+  --muted:rgba(29,26,21,.62); --accent:#e8742c; --stage:#0a0c14;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0a0c14; --ink:#efeaf6; --line:rgba(239,234,246,.13);
+    --muted:rgba(239,234,246,.6); --accent:#ff9147; --stage:#05070d;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:15px;line-height:1.6;padding:32px 20px 56px;
+}
+::selection{background:var(--accent);color:#fff}
+main{max-width:1024px;margin:0 auto}
+a{color:var(--accent)}
+
+nav{display:flex;gap:16px;align-items:center;margin-bottom:28px}
+nav a{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+nav a:hover{color:var(--accent)}
+nav .right{margin-left:auto}
+
+.logo{width:200px;max-width:60%;height:auto;display:block;margin-bottom:18px}
+@media (prefers-color-scheme: dark){
+  .logo{background:#fffaf0;border-radius:12px;padding:12px 16px}
+}
+h1{font-family:'Unbounded',sans-serif;font-size:clamp(22px,5vw,30px);font-weight:800;margin:0 0 6px}
+h1 i{font-style:normal;color:var(--accent)}
+.tagline{color:var(--muted);max-width:60ch;margin-bottom:24px}
+
+/* The game window is a fixed 1024x750 and refuses to go smaller
+   (MainView.setMinimumSize). CheerpJ adds a title bar on top. Sizing the stage
+   to anything less cuts off the play area. Do not make this an aspect ratio. */
+.stagewrap{overflow-x:auto;overflow-y:hidden}
+.stage{position:relative;background:var(--stage);border:1.5px solid var(--line);
+  overflow:hidden;width:1024px;height:800px;margin:0 auto}
+.stage.full{position:fixed;inset:0;z-index:99;border:0;width:auto;height:auto;margin:0}
+#display{position:absolute;inset:0}
+
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;text-align:center;padding:28px;
+  background:var(--stage);color:#efeaf6}
+.overlay[hidden]{display:none}
+.overlay img{width:160px;max-width:50%;height:auto;background:#fffaf0;
+  border-radius:10px;padding:12px 16px}
+.play{background:var(--accent);color:#fff;border:0;cursor:pointer;
+  font-family:'Unbounded',sans-serif;font-size:15px;font-weight:600;
+  padding:14px 28px;border-radius:999px}
+.play:disabled{opacity:.55;cursor:default}
+.hint{font-size:13px;color:rgba(239,234,246,.6);max-width:40ch}
+.hint[hidden]{display:none}
+.status{font-size:13px;color:rgba(239,234,246,.8);min-height:1.4em}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.bar button{background:transparent;color:var(--ink);border:1.5px solid var(--line);
+  border-radius:999px;padding:8px 16px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.bar button:hover{border-color:var(--accent);color:var(--accent)}
+.bar .note{font-size:13px;color:var(--muted);margin-left:auto}
+
+footer{max-width:1024px;margin:40px auto 0;border-top:1.5px solid var(--line);
+  padding-top:14px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <nav>
+    <a href="../">&larr; tobiludo.de</a>
+    <a class="right" href="../beatspeeder/">BeatSpeeder &rarr;</a>
+  </nav>
+
+  <img class="logo" src="cover.png" alt="PuttUP logo">
+  <h1>PuttUP <i>&middot;</i> 2D Minigolf</h1>
+  <p class="tagline">A 2D minigolf simulation with physics-based ball behaviour, local multiplayer
+  and a built-in track editor. Developed in Java as a university software engineering team
+  project (2015/16).</p>
+
+  <div class="stagewrap">
+    <div class="stage" id="stage">
+      <div id="display"></div>
+      <div class="overlay" id="overlay">
+        <button class="play" id="playBtn">Play in browser</button>
+        <p class="status" id="status"></p>
+        <p class="hint" id="hint">Loads about 18 MB on first start.
+        Needs a desktop browser and a mouse.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <button id="fsBtn">Fullscreen</button>
+    <button id="reloadBtn">Restart</button>
+    <span class="note"><a href="puttup.jar" download>Download puttup.jar</a>
+      &middot; 43 MB &middot; needs Java 8</span>
+  </div>
+</main>
+
+<footer>&copy; Tobias Geib &middot; <a href="../">Tobiludo</a> &middot;
+  Team student project (Java 8, Spring) &middot;
+  Java in the browser by <a href="https://cheerpj.com/" rel="noopener">CheerpJ</a></footer>
+
+<script>
+// 4.3 is the newest CheerpJ that still ships a Java 8 runtime, and unlike 3.x
+// it implements audio. Note 3.x served cj3loader.js, 4.x serves loader.js.
+const CHEERPJ_LOADER = "https://cjrtnc.leaningtech.com/4.3/loader.js";
+
+// CheerpJ virtual path. "/app/" maps to the web server's ROOT, not to this
+// page's folder, so a hardcoded path breaks whenever the root moves. Deriving
+// it from this page's own URL keeps it correct everywhere:
+//   served from output/   (Vercel, serve.py)      -> /app/puttup/web/...
+//   served from the repo  (VS Code Live Server)   -> /app/output/puttup/web/...
+const JAR_PATH = "/app" + new URL("web/puttup-web.jar", location.href).pathname;
+
+// PuttUP loads every asset through ClassLoader.getSystemResource(), which
+// searches the system classloader rather than the one owning the class. Putting
+// the jar on java.class.path is what makes those lookups resolve.
+const FORCE_SYSTEM_CLASSPATH = true;
+
+const stage    = document.getElementById("stage");
+const overlay  = document.getElementById("overlay");
+const display  = document.getElementById("display");
+const playBtn  = document.getElementById("playBtn");
+const statusEl = document.getElementById("status");
+const hintEl   = document.getElementById("hint");
+let started = false;
+
+function say(text){ statusEl.textContent = text; }
+
+function loadScript(src){
+  return new Promise(function(resolve, reject){
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = function(){ reject(new Error("could not load " + src)); };
+    document.head.appendChild(s);
+  });
+}
+
+async function start(){
+  if (started) return;
+  started = true;
+  playBtn.disabled = true;
+  playBtn.textContent = "Loading";
+  hintEl.hidden = true;
+
+  try {
+    say("Fetching the Java runtime");
+    await loadScript(CHEERPJ_LOADER);
+
+    say("Starting");
+    const initOptions = { version: 8 };
+    if (FORCE_SYSTEM_CLASSPATH) {
+      initOptions.javaProperties = ["java.class.path=" + JAR_PATH];
+    }
+    await cheerpjInit(initOptions);
+
+    // Explicit size, not -1/-1. Auto-sizing gave a display too short for the
+    // game's fixed 1024x750 window and cut off part of the play area.
+    cheerpjCreateDisplay(1024, 800, display);
+
+    say("Loading PuttUP");
+    overlay.hidden = true;
+    await cheerpjRunJar(JAR_PATH);
+  } catch (err) {
+    console.error(err);
+    started = false;
+    overlay.hidden = false;
+    playBtn.disabled = false;
+    playBtn.textContent = "Try again";
+    hintEl.hidden = false;
+    hintEl.textContent = "The download below always works.";
+    say("Failed to start: " + err.message);
+  }
+}
+
+playBtn.addEventListener("click", start);
+
+document.getElementById("fsBtn").addEventListener("click", function(){
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else if (stage.requestFullscreen) {
+    stage.requestFullscreen().catch(function(){ stage.classList.toggle("full"); });
+  } else {
+    stage.classList.toggle("full");
+  }
+});
+
+document.getElementById("reloadBtn").addEventListener("click", function(){
+  location.reload();
+});
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape" && stage.classList.contains("full")) stage.classList.remove("full");
+});
+</script>
+</body>
+</html>

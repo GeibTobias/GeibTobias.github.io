@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeatSpeeder</title>
+<meta name="description" content="BeatSpeeder: a rhythm game built in Unity, playable in the browser.">
+<link rel="icon" type="image/png" href="cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4ecdd; --ink:#1d1a15; --line:rgba(29,26,21,.14);
+  --muted:rgba(29,26,21,.62); --accent:#e8742c; --stage:#0a0c14;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0a0c14; --ink:#efeaf6; --line:rgba(239,234,246,.13);
+    --muted:rgba(239,234,246,.6); --accent:#ff9147; --stage:#05070d;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:15px;line-height:1.6;padding:32px 20px 56px;
+}
+::selection{background:var(--accent);color:#fff}
+main{max-width:900px;margin:0 auto}
+a{color:var(--accent)}
+
+nav{display:flex;gap:16px;align-items:center;margin-bottom:28px}
+nav a{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+nav a:hover{color:var(--accent)}
+nav .right{margin-left:auto}
+
+.cover{width:200px;max-width:60%;height:auto;display:block;margin-bottom:18px;
+  border-radius:12px;border:1.5px solid var(--line)}
+h1{font-family:'Unbounded',sans-serif;font-size:clamp(22px,5vw,30px);font-weight:800;margin:0 0 6px}
+.tagline{color:var(--muted);max-width:60ch;margin-bottom:24px}
+
+.stage{position:relative;aspect-ratio:16/10;overflow:hidden;
+  border:1.5px solid var(--line);background:var(--stage)}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+/* Nothing downloads until this is clicked. The build is about 46 MB. */
+.poster{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;padding:20px;text-align:center;cursor:pointer;
+  background:var(--stage);color:#efeaf6;border:0;width:100%;font:inherit}
+.poster .launch{background:var(--accent);color:#fff;border-radius:999px;
+  font-family:'Unbounded',sans-serif;font-size:15px;font-weight:600;padding:14px 28px}
+.poster small{font-size:13px;color:rgba(239,234,246,.6);max-width:36ch}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.bar button{background:transparent;color:var(--ink);border:1.5px solid var(--line);
+  border-radius:999px;padding:8px 16px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.bar button:hover{border-color:var(--accent);color:var(--accent)}
+.bar .note{font-size:13px;color:var(--muted);margin-left:auto}
+.controls{font-size:13px;color:var(--muted);margin-top:12px}
+.controls b{color:var(--ink);font-weight:600}
+
+footer{max-width:900px;margin:40px auto 0;border-top:1.5px solid var(--line);
+  padding-top:14px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <nav>
+    <a href="../">&larr; tobiludo.de</a>
+    <a class="right" href="../puttup/">PuttUP &rarr;</a>
+  </nav>
+
+  <img class="cover" src="cover.png" alt="BeatSpeeder cover art">
+  <h1>BeatSpeeder</h1>
+  <p class="tagline">A rhythm game built in Unity as a student team project (2019),
+  originally for the Oculus Quest.</p>
+
+  <div class="stage" id="stage">
+    <button class="poster" id="poster" type="button">
+      <span class="launch">Play in browser</span>
+      <small>Loads about 46 MB on first start.</small>
+    </button>
+  </div>
+
+  <div class="bar">
+    <button id="fs" type="button" hidden>Fullscreen</button>
+    <button id="stop" type="button" hidden>Stop</button>
+    <span class="note"><a href="https://soundcloud.com/tobi-g-4/beatspeeder-ost-spacerace">Space
+      Race (OST) on SoundCloud</a></span>
+  </div>
+
+  <p class="controls"><b>WASD</b> to move &middot; walk past the line to start &middot;
+  <b>left</b> / <b>right click</b> for the blue and red catchers</p>
+</main>
+
+<footer>&copy; Tobias Geib &middot; <a href="../">Tobiludo</a> &middot;
+  Team student project (Unity, Oculus Quest)</footer>
+
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var fs = document.getElementById('fs');
+  var stop = document.getElementById('stop');
+
+  // The poster in the markup is the one the page loads with; Stop clones it back in.
+  var template = document.getElementById('poster').cloneNode(true);
+
+  function wire(poster) {
+    poster.addEventListener('click', function () {
+      poster.remove();
+      var frame = document.createElement('iframe');
+      frame.src = 'web/index.html';
+      frame.title = 'BeatSpeeder (Unity WebGL)';
+      frame.allow = 'autoplay; fullscreen';
+      stage.appendChild(frame);
+      fs.hidden = false;
+      stop.hidden = false;
+    });
+  }
+
+  fs.addEventListener('click', function () {
+    var frame = stage.querySelector('iframe');
+    if (frame && frame.requestFullscreen) { frame.requestFullscreen(); }
+  });
+
+  // Dropping the iframe tears down the Unity instance, its WebGL context and its audio
+  // in one go - more reliable than asking Unity's WebGL runtime to quit itself.
+  stop.addEventListener('click', function () {
+    var frame = stage.querySelector('iframe');
+    if (frame) { frame.remove(); }
+    fs.hidden = true;
+    stop.hidden = true;
+    var poster = template.cloneNode(true);
+    wire(poster);
+    stage.appendChild(poster);
+  });
+
+  wire(document.getElementById('poster'));
+})();
+</script>
+</body>
+</html>

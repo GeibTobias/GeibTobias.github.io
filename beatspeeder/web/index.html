@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeatSpeeder</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #0a0c14; overflow: hidden; }
+  #stage { width: 100%; height: 100%; position: relative; }
+  #gameContainer { position: absolute; inset: 0; }
+  /* Unity sizes the canvas from the template macros; override so it fills whatever
+     box the page (or the iframe) gives it. */
+  #gameContainer canvas { width: 100% !important; height: 100% !important; display: block; }
+
+  /* Must be a sibling of #gameContainer, never a child: UnityLoader.instantiate
+     clears the container with innerHTML = "" before it inserts the canvas. */
+  #overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px;
+    background: #0a0c14; color: #efeaf6; cursor: pointer;
+    font-family: system-ui, sans-serif; text-align: center; padding: 20px;
+  }
+  #overlay.hidden { display: none; }
+  #bar { width: 220px; height: 4px; background: rgba(239,234,246,.16); border-radius: 2px; }
+  #bar > div { width: 0%; height: 100%; background: #ff9147; border-radius: 2px; }
+  #msg { font-size: 14px; color: rgba(239,234,246,.6); }
+  #play { font-size: 15px; font-weight: 600; color: #ff9147; display: none; }
+  #hint { font-size: 12.5px; color: rgba(239,234,246,.45); max-width: 34ch; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="gameContainer"></div>
+  <div id="overlay">
+    <div id="bar"><div></div></div>
+    <div id="msg">Loading&hellip;</div>
+    <div id="play">Click to play</div>
+    <div id="hint">WASD to move &middot; walk forward past the line to start &middot;
+      left click and right click to swing the blue and red catchers</div>
+  </div>
+</div>
+
+<script src="Build/UnityLoader.js"></script>
+<script>
+  var overlay = document.getElementById("overlay");
+  var bar = document.getElementById("bar");
+  var fill = bar.firstElementChild;
+  var msg = document.getElementById("msg");
+  var play = document.getElementById("play");
+  var ready = false;
+
+  var gameInstance = UnityLoader.instantiate("gameContainer", "Build/build.json", {
+    onProgress: function (instance, progress) {
+      fill.style.width = (progress * 100) + "%";
+      if (progress === 1 && !ready) {
+        ready = true;
+        msg.style.display = "none";
+        bar.style.display = "none";
+        play.style.display = "block";
+      }
+    }
+  });
+
+  // Unity already suppresses this on its own canvas; cover the rest of the page too,
+  // since right click swings the red catcher.
+  document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+  // WASD only reaches the game once the canvas has keyboard focus, and browsers hold
+  // audio until a real click, so gate the start on one.
+  overlay.addEventListener("click", function () {
+    if (!ready) return;
+    overlay.classList.add("hidden");
+    var canvas = document.querySelector("#gameContainer canvas");
+    if (canvas) { canvas.focus(); }
+  });
+</script>
+
+</body>
+</html>
